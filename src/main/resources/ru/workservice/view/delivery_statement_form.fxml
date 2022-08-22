@@ -46,7 +46,7 @@
             <DatePicker fx:id="contractDate" editable="false" layoutX="415.0" layoutY="88.0" prefHeight="26.0" prefWidth="121.0" />
          </children>
       </Pane>
-      <GridPane alignment="CENTER" hgap="5.0" layoutX="25.0" layoutY="181.0" prefHeight="58.0" prefWidth="882.0" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="130.0">
+      <GridPane alignment="CENTER" hgap="5.0" layoutX="25.0" layoutY="181.0" prefHeight="58.0" prefWidth="882.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="19.600000000000023" AnchorPane.topAnchor="130.0">
         <columnConstraints>
           <ColumnConstraints hgrow="ALWAYS" maxWidth="165.59998779296876" minWidth="0.0" prefWidth="151.99999389648437" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="518.4" minWidth="10.0" prefWidth="129.80000610351564" />
@@ -101,7 +101,7 @@
             <Label text="Дек" GridPane.columnIndex="14" />
          </children>
       </GridPane>
-      <Line endX="775.0" layoutX="128.0" layoutY="110.0" startX="-100.0" />
+      <Line endX="775.0" layoutX="128.0" layoutY="110.0" startX="-100.0" AnchorPane.leftAnchor="27.5" AnchorPane.rightAnchor="23.5" />
       <TableView fx:id="table" layoutX="40.0" layoutY="252.0" prefHeight="282.0" prefWidth="876.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="22.0">
         <columns>
           <TableColumn fx:id="productNameCol" prefWidth="147.9999656677246" text="Изделие" />

@@ -3,6 +3,7 @@ package ru.workservice.view;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +29,7 @@ import ru.workservice.service.model.Notification;
 import ru.workservice.view.util.SceneSwitcher;
 
 
+import javax.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Month;
@@ -42,11 +44,14 @@ public class ViewAllInformationController implements Initializable {
     private final DeliveryStatementService deliveryStatementService;
     private final ObservableList<String> products = FXCollections.observableArrayList();
     private final ObservableList<String> contracts = FXCollections.observableArrayList();
-    private final ObservableList<MainTableRow> rows = FXCollections.observableArrayList();
+    private final ObservableList<MainTableRow> tableRows = FXCollections.observableArrayList();
     private Map<String, DeliveryStatement> deliveryStatementsByContract;
     private Map<String, List<DeliveryStatement>> deliveryStatementsByProduct;
     private final Map<DeliveryStatement.Row, List<Notification>> notificationsByDeliveryStatement = new HashMap<>();
-    private final FxWeaver fxWeaver;
+
+    private FilteredList<MainTableRow> filteredTableRows;
+    private FilteredList<String> filteredContracts;
+    private FilteredList<String> filteredProducts;
     private boolean contractSelectedInListView;
     private final SceneSwitcher sceneSwitcher;
 
@@ -56,6 +61,10 @@ public class ViewAllInformationController implements Initializable {
     private CheckBox viewExpiredRows;
     @FXML
     private CheckBox viewLastMonthRows;
+    @FXML
+    private TextField tableSearchCriteria;
+    @FXML
+    private TextField listViewSearchCriteria;
     @FXML
     private ListView<String> listOfContractsOrProducts;
     @FXML
@@ -101,9 +110,8 @@ public class ViewAllInformationController implements Initializable {
     @FXML
     private TableColumn<MainTableRow, String> noteCol;
 
-    public ViewAllInformationController(DeliveryStatementService deliveryStatementService, FxWeaver fxWeaver, SceneSwitcher sceneSwitcher) {
+    public ViewAllInformationController(DeliveryStatementService deliveryStatementService, SceneSwitcher sceneSwitcher) {
         this.deliveryStatementService = deliveryStatementService;
-        this.fxWeaver = fxWeaver;
         this.sceneSwitcher = sceneSwitcher;
     }
 
@@ -122,9 +130,12 @@ public class ViewAllInformationController implements Initializable {
     }
 
     private void setTableAndFieldsOptions() {
-        table.setItems(rows);
+        filteredTableRows = new FilteredList<>(tableRows);
+        table.setItems(filteredTableRows);
         products.addAll(deliveryStatementsByProduct.keySet());
         contracts.addAll(new ArrayList<>(deliveryStatementsByContract.keySet()));
+        filteredContracts = new FilteredList<>(contracts);
+        filteredProducts = new FilteredList<>(products);
         listOfContractsOrProducts.getSelectionModel().selectedItemProperty()
                 .addListener(((observableValue, oldValue, newValue) -> {
                     if (observableValue.getValue() != null) {
@@ -132,7 +143,7 @@ public class ViewAllInformationController implements Initializable {
                         fillTable(observableValue.getValue());
                     } else {
                         setVisibleForFields(false, title);
-                        rows.clear();
+                        tableRows.clear();
                     }
                 }));
         editDeliveryStatementButton.disableProperty().bind(Bindings.isEmpty(table.getSelectionModel().getSelectedItems()));
@@ -145,7 +156,7 @@ public class ViewAllInformationController implements Initializable {
         viewCompletedRows.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (observableValue.getValue().booleanValue()) {
                 unselectCheckBoxFieldsExceptFor(viewCompletedRows);
-                table.getItems().removeIf(row -> !row.isCompleted);
+                filteredTableRows.setPredicate(row -> row.isCompleted);
             } else {
                 String selectedItem = listOfContractsOrProducts.getSelectionModel().selectedItemProperty().get();
                 fillTable(selectedItem);
@@ -154,7 +165,7 @@ public class ViewAllInformationController implements Initializable {
         viewLastMonthRows.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (observableValue.getValue().booleanValue()) {
                 unselectCheckBoxFieldsExceptFor(viewLastMonthRows);
-                table.getItems().removeIf(row -> !row.isLastMonthNow);
+                filteredTableRows.setPredicate(row -> row.isLastMonthNow);
             } else {
                 String selectedItem = listOfContractsOrProducts.getSelectionModel().selectedItemProperty().get();
                 fillTable(selectedItem);
@@ -163,7 +174,7 @@ public class ViewAllInformationController implements Initializable {
         viewExpiredRows.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (observableValue.getValue().booleanValue()) {
                 unselectCheckBoxFieldsExceptFor(viewExpiredRows);
-                table.getItems().removeIf(row -> !row.isExpired);
+                filteredTableRows.setPredicate(row -> row.isExpired);
             } else {
                 String selectedItem = listOfContractsOrProducts.getSelectionModel().selectedItemProperty().get();
                 fillTable(selectedItem);
@@ -233,19 +244,22 @@ public class ViewAllInformationController implements Initializable {
         });
     }
 
-    public void fillProductsList(ActionEvent event) {
+    public void fillProductsList() {
         setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
         contractSelectedInListView = false;
-        listOfContractsOrProducts.setItems(products);
+        removeListViewPredicate();
+        listOfContractsOrProducts.setItems(filteredProducts);
     }
 
-    public void fillContractsList(ActionEvent event) {
+    public void fillContractsList() {
         setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
         contractSelectedInListView = true;
-        listOfContractsOrProducts.setItems(contracts);
+        removeListViewPredicate();
+        listOfContractsOrProducts.setItems(filteredContracts);
     }
 
     private void fillTable(String selectedItem) {
+        removeTablePredicate();
         if (contractSelectedInListView) {
             fillTableByContract(selectedItem);
         } else {
@@ -254,7 +268,7 @@ public class ViewAllInformationController implements Initializable {
     }
 
     private void fillTableByContract(String key) {
-        rows.clear();
+        tableRows.clear();
         changedRows.clear();
         DeliveryStatement deliveryStatement = deliveryStatementsByContract.get(key);
         List<MainTableRow> rowsList = new ArrayList<>();
@@ -262,13 +276,13 @@ public class ViewAllInformationController implements Initializable {
             rowsList.add(mapDeliveryStatementRowToMainTableRow(row, null));
             changedRows.add(row);
         }
-        rows.addAll(rowsList);
+        tableRows.addAll(rowsList);
         title.setText(deliveryStatement.toString());
         setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
     }
 
     private void fillTableByProduct(String key) {
-        rows.clear();
+        tableRows.clear();
         changedRows.clear();
         List<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
         for (DeliveryStatement deliveryStatement : deliveryStatements) {
@@ -280,7 +294,7 @@ public class ViewAllInformationController implements Initializable {
                     changedRows.add(row);
                 }
             }
-            rows.addAll(rowsList);
+            tableRows.addAll(rowsList);
         }
         title.setText("Все ведомости поставки по изделию " + key);
         setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
@@ -361,6 +375,35 @@ public class ViewAllInformationController implements Initializable {
     private void clearMainList() {
         products.clear();
         contracts.clear();
+    }
+
+    public void searchTableRows() {
+        filteredTableRows.setPredicate((row) ->
+                row.productOrContract
+                        .toLowerCase()
+                        .matches("(.*)" + tableSearchCriteria.getText().toLowerCase() + "(.*)"));
+    }
+
+    public void searchListView() {
+        if (contractSelectedInListView) {
+            filteredContracts.setPredicate(c -> c.toLowerCase()
+                    .matches("(.*)" + listViewSearchCriteria.getText().toLowerCase() + "(.*)"));
+        }
+        else {
+            filteredProducts.setPredicate(c -> c.toLowerCase()
+                    .matches("(.*)" + listViewSearchCriteria.getText().toLowerCase() + "(.*)"));
+        }
+    }
+
+    public void removeTablePredicate() {
+        filteredTableRows.setPredicate(null);
+        tableSearchCriteria.setText("");
+    }
+
+    public void removeListViewPredicate() {
+        filteredContracts.setPredicate(null);
+        filteredProducts.setPredicate(null);
+        listViewSearchCriteria.setText("");
     }
 
     @AllArgsConstructor
