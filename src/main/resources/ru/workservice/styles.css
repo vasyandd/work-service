@@ -1,0 +1,15 @@
+.completed {
+    -fx-background-color: #a5ef89;
+}
+
+.expired {
+    -fx-background-color: #f55a5a;
+}
+
+.last_month {
+    -fx-background-color: rgba(224, 153, 100, 0.75);
+}
+
+.invalid_data {
+    -fx-background-color: #f80404;
+}

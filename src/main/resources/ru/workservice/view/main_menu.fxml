@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="412.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.workservice.view.MainMenuController">
+   <children>
+      <Button layoutY="275.0" mnemonicParsing="false" onAction="#switchSceneToViewAllInformation" prefHeight="139.0" prefWidth="507.0" text="Посмотреть, что вообще происходит" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font size="36.0" />
+         </font></Button>
+      <GridPane layoutX="-1.0" layoutY="2.0" prefHeight="274.0" prefWidth="507.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button mnemonicParsing="false" onAction="#switchSceneToNotificationForm" prefHeight="291.0" prefWidth="358.0" text="Ввести извещение" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#switchSceneToDeliveryStatementForm" prefHeight="299.0" prefWidth="295.0" text="Ввести ведомость поставки" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1">
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Button>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
