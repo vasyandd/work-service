@@ -22,7 +22,7 @@ public class SceneSwitcher {
         Node node = (Node) event.getSource();
         Stage thisStage = (Stage) node.getScene().getWindow();
         thisStage.setScene(scene);
-        thisStage.setResizable(false);
+        thisStage.setResizable(true);
         thisStage.centerOnScreen();
         thisStage.show();
     }

@@ -142,21 +142,23 @@ public class DeliveryStatementFormController implements Initializable {
         table.setItems(rows);
         table.setOnMouseClicked(mouseEvent -> {
             TableRowInDeliveryStatementForm model = table.getSelectionModel().getSelectedItem();
-            productName.setText(model.productName);
-            productPrice.setText(model.productPrice);
-            period.setText(String.valueOf(model.period));
-            janQuantity.setText(String.valueOf(model.janQuantity));
-            febQuantity.setText(String.valueOf(model.febQuantity));
-            marQuantity.setText(String.valueOf(model.marQuantity));
-            aprQuantity.setText(String.valueOf(model.aprQuantity));
-            mayQuantity.setText(String.valueOf(model.mayQuantity));
-            junQuantity.setText(String.valueOf(model.junQuantity));
-            julQuantity.setText(String.valueOf(model.julQuantity));
-            augQuantity.setText(String.valueOf(model.augQuantity));
-            sepQuantity.setText(String.valueOf(model.sepQuantity));
-            octQuantity.setText(String.valueOf(model.octQuantity));
-            novQuantity.setText(String.valueOf(model.novQuantity));
-            decQuantity.setText(String.valueOf(model.decQuantity));
+            if (model != null) {
+                productName.setText(model.productName);
+                productPrice.setText(model.productPrice);
+                period.setText(String.valueOf(model.period));
+                janQuantity.setText(String.valueOf(model.janQuantity));
+                febQuantity.setText(String.valueOf(model.febQuantity));
+                marQuantity.setText(String.valueOf(model.marQuantity));
+                aprQuantity.setText(String.valueOf(model.aprQuantity));
+                mayQuantity.setText(String.valueOf(model.mayQuantity));
+                junQuantity.setText(String.valueOf(model.junQuantity));
+                julQuantity.setText(String.valueOf(model.julQuantity));
+                augQuantity.setText(String.valueOf(model.augQuantity));
+                sepQuantity.setText(String.valueOf(model.sepQuantity));
+                octQuantity.setText(String.valueOf(model.octQuantity));
+                novQuantity.setText(String.valueOf(model.novQuantity));
+                decQuantity.setText(String.valueOf(model.decQuantity));
+            }
         });
         setCellValueFactory();
     }
@@ -237,12 +239,18 @@ public class DeliveryStatementFormController implements Initializable {
     private TableRowInDeliveryStatementForm mapInputDataToTable() {
         return new TableRowInDeliveryStatementForm(productName.getText(),
                 Integer.parseInt(period.getText()), productPrice.getText(),
-                Integer.parseInt(janQuantity.getText()), Integer.parseInt(febQuantity.getText()),
-                Integer.parseInt(marQuantity.getText()), Integer.parseInt(aprQuantity.getText()),
-                Integer.parseInt(mayQuantity.getText()), Integer.parseInt(junQuantity.getText()),
-                Integer.parseInt(julQuantity.getText()), Integer.parseInt(augQuantity.getText()),
-                Integer.parseInt(sepQuantity.getText()), Integer.parseInt(octQuantity.getText()),
-                Integer.parseInt(novQuantity.getText()), Integer.parseInt(decQuantity.getText()));
+                Integer.parseInt(janQuantity.getText().trim().isEmpty() ? "0" : janQuantity.getText().trim()),
+                Integer.parseInt(febQuantity.getText().trim().isEmpty() ? "0" : febQuantity.getText().trim()),
+                Integer.parseInt(marQuantity.getText().trim().isEmpty() ? "0" : marQuantity.getText().trim()),
+                Integer.parseInt(aprQuantity.getText().trim().isEmpty() ? "0" : aprQuantity.getText().trim()),
+                Integer.parseInt(mayQuantity.getText().trim().isEmpty() ? "0" : mayQuantity.getText().trim()),
+                Integer.parseInt(junQuantity.getText().trim().isEmpty() ? "0" : janQuantity.getText().trim()),
+                Integer.parseInt(julQuantity.getText().trim().isEmpty() ? "0" : julQuantity.getText().trim()),
+                Integer.parseInt(augQuantity.getText().trim().isEmpty() ? "0" : augQuantity.getText().trim()),
+                Integer.parseInt(sepQuantity.getText().trim().isEmpty() ? "0" : sepQuantity.getText().trim()),
+                Integer.parseInt(octQuantity.getText().trim().isEmpty() ? "0" : octQuantity.getText().trim()),
+                Integer.parseInt(novQuantity.getText().trim().isEmpty() ? "0" : janQuantity.getText().trim()),
+                Integer.parseInt(decQuantity.getText().trim().isEmpty() ? "0" : decQuantity.getText().trim()));
     }
 
     private void clearInputFields() {
