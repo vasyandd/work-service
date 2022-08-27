@@ -1,4 +1,4 @@
-package ru.workservice.service.model;
+package ru.workservice.model;
 
 import lombok.*;
 
@@ -30,7 +30,7 @@ public class Notification {
     private Contract contract;
     @ManyToOne
     @JoinColumn(name = "ds_row_id")
-    private DeliveryStatement.Row deliveryStatementRow;
+    private DeliveryStatementRow deliveryStatementRow;
 
 
     public Notification(Integer number, LocalDate date, String productName,

@@ -1,8 +1,10 @@
-package ru.workservice.service;
+package ru.workservice.service.impl;
 
 import org.springframework.stereotype.Service;
 import ru.workservice.repository.NotificationRepository;
-import ru.workservice.service.model.Notification;
+import ru.workservice.model.Notification;
+import ru.workservice.service.DeliveryStatementService;
+import ru.workservice.service.NotificationService;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {

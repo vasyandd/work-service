@@ -1,10 +1,11 @@
-package ru.workservice.service;
+package ru.workservice.util;
 
 
 
-import ru.workservice.service.model.Contract;
-import ru.workservice.service.model.DeliveryStatement;
-import ru.workservice.service.model.Notification;
+import ru.workservice.model.Contract;
+import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.DeliveryStatementRow;
+import ru.workservice.model.Notification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public final class DeliveryStatements {
     public static Map<String, List<DeliveryStatement>> structureByProduct(List<DeliveryStatement> deliveryStatements) {
         Map<String, List<DeliveryStatement>> result = new HashMap<>();
         for (DeliveryStatement d : deliveryStatements) {
-            for (DeliveryStatement.Row row : d.getRows()) {
+            for (DeliveryStatementRow row : d.getRows()) {
                 result.computeIfAbsent(row.getProductName(),
                         (unused) -> new ArrayList<>()).add(d);
             }
@@ -34,15 +35,15 @@ public final class DeliveryStatements {
         return result;
     }
 
-    public static Map<DeliveryStatement.Row, List<Notification>> structureNotificationsByDeliveryStatementRow(DeliveryStatement deliveryStatement) {
+    public static Map<DeliveryStatementRow, List<Notification>> structureNotificationsByDeliveryStatementRow(DeliveryStatement deliveryStatement) {
         return deliveryStatement.getRows().stream()
-                .collect(toMap(row -> row, DeliveryStatement.Row::getNotifications));
+                .collect(toMap(row -> row, DeliveryStatementRow::getNotifications));
     }
 
-    public static Map<Contract, Map<Integer, List<DeliveryStatement.Row>>> structureProductsByContractForPeriod(List<DeliveryStatement> deliveryStatements) {
-        Map<Contract, Map<Integer, List<DeliveryStatement.Row>>> result = new HashMap<>();
+    public static Map<Contract, Map<Integer, List<DeliveryStatementRow>>> structureProductsByContractForPeriod(List<DeliveryStatement> deliveryStatements) {
+        Map<Contract, Map<Integer, List<DeliveryStatementRow>>> result = new HashMap<>();
         for (DeliveryStatement ds : deliveryStatements) {
-            Map<Integer, List<DeliveryStatement.Row>> products = ds.getNotDeliveredProductsByPeriod();
+            Map<Integer, List<DeliveryStatementRow>> products = ds.getNotDeliveredProductsByPeriod();
             result.put(ds.getContract(), products);
         }
         return result;

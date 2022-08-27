@@ -128,5 +128,7 @@
          </children>
       </Pane>
       <Button layoutX="79.0" layoutY="297.0" mnemonicParsing="false" onAction="#saveDeliveryStatement" prefHeight="26.0" prefWidth="108.0" text="Сохранить" />
+      <Button layoutX="472.0" layoutY="297.0" mnemonicParsing="false" onAction="#deleteDeliveryStatement" text="Удалить всю ведомость поставки" textFill="RED" />
+      <Button layoutX="711.0" layoutY="297.0" mnemonicParsing="false" onAction="#deleteDeliveryStatementRow" text="Удалить текущую строку" textFill="RED" />
    </children>
 </AnchorPane>

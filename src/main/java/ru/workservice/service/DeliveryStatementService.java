@@ -1,9 +1,9 @@
 package ru.workservice.service;
 
 
-import ru.workservice.service.model.Contract;
-import ru.workservice.service.model.DeliveryStatement;
-import ru.workservice.service.model.Notification;
+import ru.workservice.model.Contract;
+import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.Notification;
 
 import java.util.List;
 
@@ -21,6 +21,8 @@ public interface DeliveryStatementService {
 
     DeliveryStatement getDeliveryStatementsByContract(Contract contract);
 
-    void deleteAll();
+    void delete(Long id);
+
+    void deleteDeliveryStatementRow(Long id);
 
 }

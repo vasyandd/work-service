@@ -1,6 +1,5 @@
 package ru.workservice.view;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -22,9 +21,9 @@ import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.WorkServiceFXApplication;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.service.DeliveryStatements;
-import ru.workservice.service.model.DeliveryStatement;
-import ru.workservice.service.model.Notification;
+import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.DeliveryStatementRow;
+import ru.workservice.model.Notification;
 import ru.workservice.view.util.SceneSwitcher;
 
 
@@ -34,20 +33,20 @@ import java.time.Month;
 import java.util.*;
 
 import static javafx.beans.binding.Bindings.*;
-import static ru.workservice.service.DeliveryStatements.*;
+import static ru.workservice.util.DeliveryStatements.*;
 import static ru.workservice.view.util.Style.*;
 
 @Component
 @FxmlView("view_all_information.fxml")
 public class ViewAllInformationController implements Initializable {
-    private final List<DeliveryStatement.Row> changedRows = new ArrayList<>();
+    private final List<DeliveryStatementRow> changedRows = new ArrayList<>();
     private final DeliveryStatementService deliveryStatementService;
     private final ObservableList<String> products = FXCollections.observableArrayList();
     private final ObservableList<String> contracts = FXCollections.observableArrayList();
     private final ObservableList<MainTableRow> tableRows = FXCollections.observableArrayList();
     private Map<String, DeliveryStatement> deliveryStatementsByContract;
     private Map<String, List<DeliveryStatement>> deliveryStatementsByProduct;
-    private final Map<DeliveryStatement.Row, List<Notification>> notificationsByDeliveryStatement = new HashMap<>();
+    private final Map<DeliveryStatementRow, List<Notification>> notificationsByDeliveryStatement = new HashMap<>();
 
     private FilteredList<MainTableRow> filteredTableRows;
     private FilteredList<String> filteredContracts;
@@ -272,7 +271,7 @@ public class ViewAllInformationController implements Initializable {
         changedRows.clear();
         DeliveryStatement deliveryStatement = deliveryStatementsByContract.get(key);
         List<MainTableRow> rowsList = new ArrayList<>();
-        for (DeliveryStatement.Row row : deliveryStatement.getRows()) {
+        for (DeliveryStatementRow row : deliveryStatement.getRows()) {
             rowsList.add(mapDeliveryStatementRowToMainTableRow(row, null));
             changedRows.add(row);
         }
@@ -287,7 +286,7 @@ public class ViewAllInformationController implements Initializable {
         List<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
         for (DeliveryStatement deliveryStatement : deliveryStatements) {
             List<MainTableRow> rowsList = new ArrayList<>();
-            for (DeliveryStatement.Row row : deliveryStatement.getRows()) {
+            for (DeliveryStatementRow row : deliveryStatement.getRows()) {
                 if (row.getProductName().equals(key)) {
                     String contract = deliveryStatement.getContract().toString();
                     rowsList.add(mapDeliveryStatementRowToMainTableRow(row, contract));
@@ -300,7 +299,7 @@ public class ViewAllInformationController implements Initializable {
         setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
     }
 
-    private MainTableRow mapDeliveryStatementRowToMainTableRow(DeliveryStatement.Row row, String contract) {
+    private MainTableRow mapDeliveryStatementRowToMainTableRow(DeliveryStatementRow row, String contract) {
         Map<Month, String> productQuantityByMonth = row.getProductQuantityWithSlash();
         String firstColumnValue = contract == null ? row.getProductName() : contract;
         return new MainTableRow(firstColumnValue, row.getPeriod(),
@@ -345,9 +344,9 @@ public class ViewAllInformationController implements Initializable {
             thisStage.centerOnScreen();
 
             EditDeliveryStatementController editController = loader.getController();
-            DeliveryStatement.Row editableRow = null;
+            DeliveryStatementRow editableRow = null;
             MainTableRow selectedRow = table.getSelectionModel().getSelectedItem();
-            for (DeliveryStatement.Row row : changedRows) {
+            for (DeliveryStatementRow row : changedRows) {
                 if ((row.getProductName().equals(selectedRow.productOrContract)
                 || row.getDeliveryStatement().getContract().toString().equals(selectedRow.productOrContract))
                 && row.getPeriod().equals(selectedRow.period)) {
@@ -357,7 +356,6 @@ public class ViewAllInformationController implements Initializable {
             editController.initialize();
             editController.setDeliveryStatementRow(editableRow);
             editController.setStage(thisStage);
-            editController.setSceneSwitcher(sceneSwitcher);
             editController.setDeliveryStatementService(deliveryStatementService);
             thisStage.showAndWait();
             clearMainList();

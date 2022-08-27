@@ -6,9 +6,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.service.model.DeliveryStatement;
+import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.DeliveryStatementRow;
 import ru.workservice.view.util.InformationWindow;
-import ru.workservice.view.util.SceneSwitcher;
 import ru.workservice.view.util.TextFieldValidator;
 
 import java.math.BigInteger;
@@ -19,7 +19,7 @@ import static ru.workservice.view.util.TextFieldValidator.FieldPredicate.*;
 
 @FxmlView("edit_delivery_statement.fxml")
 public class EditDeliveryStatementController {
-    private DeliveryStatement.Row deliveryStatementRow;
+    private DeliveryStatementRow deliveryStatementRow;
     private Stage stage;
     private final TextFieldValidator textFieldValidator = new TextFieldValidator();
     private DeliveryStatementService deliveryStatementService;
@@ -104,8 +104,11 @@ public class EditDeliveryStatementController {
         textFieldValidator.addValidatorFor(YEAR, period);
     }
 
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
-    public void setDeliveryStatementRow(DeliveryStatement.Row deliveryStatementRow) {
+    public void setDeliveryStatementRow(DeliveryStatementRow deliveryStatementRow) {
         this.deliveryStatementRow = deliveryStatementRow;
 
         number.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getNumber()));
@@ -192,7 +195,16 @@ public class EditDeliveryStatementController {
         deliveryStatementRow.updateActualShipment(Month.DECEMBER, Integer.parseInt(decAct.getText()));
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
+    public void deleteDeliveryStatement() {
+        deliveryStatementService.delete(deliveryStatementRow.getDeliveryStatement().getId());
+        InformationWindow.viewSuccessSaveWindow("Ведомость поставки удалена!");
+        stage.close();
     }
+
+    public void deleteDeliveryStatementRow() {
+        deliveryStatementService.deleteDeliveryStatementRow(deliveryStatementRow.getId());
+        InformationWindow.viewSuccessSaveWindow("Строка ведомости поставки удалена!");
+        stage.close();
+    }
+
 }

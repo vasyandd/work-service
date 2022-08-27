@@ -16,8 +16,9 @@ import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.service.model.Contract;
-import ru.workservice.service.model.DeliveryStatement;
+import ru.workservice.model.Contract;
+import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.DeliveryStatementRow;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 import ru.workservice.view.util.TextFieldValidator;
@@ -183,19 +184,22 @@ public class DeliveryStatementFormController implements Initializable {
     }
 
     public void saveDeliveryStatement(ActionEvent event) {
-        if (textFieldValidator.fieldsAreValid(contractNumber, agreementNumber, number)) {
+        try {
             DeliveryStatement deliveryStatement = getDeliveryStatementFromTableView();
             deliveryStatementService.saveDeliveryStatement(deliveryStatement);
             table.getItems().clear();
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
             sceneSwitcher.switchSceneTo(MainMenuController.class, event);
-        } else {
-            InformationWindow.viewInputDataNotValidWindow("В шапке что-то выделено красным");
+        } catch (Exception e) {
+            InformationWindow.viewInputDataNotValidWindow(e.getMessage());
         }
     }
 
     private DeliveryStatement getDeliveryStatementFromTableView() {
-        List<DeliveryStatement.Row> rows = new ArrayList<>();
+        if (!textFieldValidator.fieldsAreValid(contractNumber, agreementNumber, number)) {
+            throw new RuntimeException("В шапке что-то выделено красным");
+        }
+        List<DeliveryStatementRow> rows = new ArrayList<>();
         for (TableRowInDeliveryStatementForm d : table.getItems()) {
             Map<Month, Integer> shipment = new HashMap<>();
             shipment.put(Month.JANUARY, d.janQuantity);
@@ -210,8 +214,11 @@ public class DeliveryStatementFormController implements Initializable {
             shipment.put(Month.OCTOBER, d.octQuantity);
             shipment.put(Month.NOVEMBER, d.novQuantity);
             shipment.put(Month.DECEMBER, d.decQuantity);
-            rows.add(new DeliveryStatement.Row(new BigInteger(d.productPrice.trim()), d.productName.trim(),
+            rows.add(new DeliveryStatementRow(new BigInteger(d.productPrice.trim()), d.productName.trim(),
                     shipment, d.period));
+        }
+        if (rows.isEmpty()) {
+            throw new RuntimeException("Таблица пустая!");
         }
         String currentNumber = number.getText().trim().isEmpty() ? null : number.getText().trim();
         Integer currentAgreementNumber = agreementNumber.getText().trim().isEmpty()

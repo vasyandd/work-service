@@ -12,11 +12,12 @@ import javafx.scene.control.TextField;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.service.DeliveryStatements;
+import ru.workservice.util.DeliveryStatements;
 import ru.workservice.service.NotificationService;
-import ru.workservice.service.model.Contract;
-import ru.workservice.service.model.DeliveryStatement;
-import ru.workservice.service.model.Notification;
+import ru.workservice.model.Contract;
+import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.DeliveryStatementRow;
+import ru.workservice.model.Notification;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 import ru.workservice.view.util.TextFieldValidator;
@@ -43,7 +44,7 @@ public class NotificationFormController implements Initializable {
     private final ObservableList<Contract> contracts = FXCollections.observableArrayList();
     private final ObservableList<String> products = FXCollections.observableArrayList();
     private final Map<String, Integer> productShipment = new HashMap<>();
-    private Map<Contract, Map<Integer, List<DeliveryStatement.Row>>> productsByContractForPeriod;
+    private Map<Contract, Map<Integer, List<DeliveryStatementRow>>> productsByContractForPeriod;
 
     @FXML
     private TextField number;
@@ -96,7 +97,7 @@ public class NotificationFormController implements Initializable {
                 products.addAll(productsByContractForPeriod.get(contract).get(period).stream()
                         .peek(row -> productShipment.put(row.getProductName(),
                                 row.getScheduledProductQuantity() - row.getActualProductQuantity()))
-                        .map(DeliveryStatement.Row::getProductName)
+                        .map(DeliveryStatementRow::getProductName)
                         .collect(Collectors.toList()));
             }
         });
