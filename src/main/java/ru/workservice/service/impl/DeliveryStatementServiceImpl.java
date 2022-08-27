@@ -4,10 +4,10 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.workservice.repository.DeliveryStatementRepository;
-import ru.workservice.model.Contract;
-import ru.workservice.model.DeliveryStatement;
-import ru.workservice.model.DeliveryStatementRow;
-import ru.workservice.model.Notification;
+import ru.workservice.model.entity.Contract;
+import ru.workservice.model.entity.DeliveryStatement;
+import ru.workservice.model.entity.DeliveryStatementRow;
+import ru.workservice.model.entity.Notification;
 import ru.workservice.repository.DeliveryStatementRowRepository;
 import ru.workservice.service.DeliveryStatementService;
 
@@ -28,8 +28,12 @@ public class DeliveryStatementServiceImpl implements DeliveryStatementService {
 
 
     @Override
+    @javax.transaction.Transactional
     public void saveDeliveryStatement(DeliveryStatement deliveryStatement) {
-        deliveryStatement.getRows().forEach(row -> row.setDeliveryStatement(deliveryStatement));
+        deliveryStatement.getRows().forEach(row -> {
+            row.setDeliveryStatement(deliveryStatement);
+            deliveryStatementRowRepository.save(row);
+        });
         deliveryStatementRepository.save(deliveryStatement);
     }
 
@@ -43,6 +47,7 @@ public class DeliveryStatementServiceImpl implements DeliveryStatementService {
         deliveryStatementRow.addNotification(notification);
         notification.setDeliveryStatementRow(deliveryStatementRow);
         deliveryStatementRepository.save(deliveryStatement);
+        deliveryStatementRowRepository.save(deliveryStatementRow);
     }
 
     @Override
@@ -83,6 +88,7 @@ public class DeliveryStatementServiceImpl implements DeliveryStatementService {
 
     @Override
     public void deleteDeliveryStatementRow(Long id) {
+        System.out.println(id);
         deliveryStatementRowRepository.deleteById(id);
     }
 }

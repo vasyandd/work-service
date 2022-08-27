@@ -2,7 +2,7 @@ package ru.workservice.service.impl;
 
 import org.springframework.stereotype.Service;
 import ru.workservice.repository.NotificationRepository;
-import ru.workservice.model.Notification;
+import ru.workservice.model.entity.Notification;
 import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.service.NotificationService;
 

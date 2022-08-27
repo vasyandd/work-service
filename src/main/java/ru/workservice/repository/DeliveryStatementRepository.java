@@ -3,7 +3,7 @@ package ru.workservice.repository;
 
 
 import org.springframework.data.repository.CrudRepository;
-import ru.workservice.model.DeliveryStatement;
+import ru.workservice.model.entity.DeliveryStatement;
 
 import java.time.LocalDate;
 import java.util.List;

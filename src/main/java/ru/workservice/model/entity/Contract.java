@@ -1,4 +1,4 @@
-package ru.workservice.model;
+package ru.workservice.model.entity;
 
 import lombok.*;
 

@@ -6,8 +6,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.model.DeliveryStatement;
-import ru.workservice.model.DeliveryStatementRow;
+import ru.workservice.model.entity.DeliveryStatement;
+import ru.workservice.model.entity.DeliveryStatementRow;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.TextFieldValidator;
 
@@ -112,7 +112,8 @@ public class EditDeliveryStatementController {
         this.deliveryStatementRow = deliveryStatementRow;
 
         number.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getNumber()));
-        agreementNumber.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getContract().getAdditionalAgreement()));
+        agreementNumber.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getContract().getAdditionalAgreement() == null
+        ? "" : deliveryStatementRow.getDeliveryStatement().getContract().getAdditionalAgreement()));
         contractNumber.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getContract().getContractNumber()));
         contractDate.setValue(deliveryStatementRow.getDeliveryStatement().getContract().getContractDate());
         productName.setText(deliveryStatementRow.getProductName());
@@ -162,7 +163,8 @@ public class EditDeliveryStatementController {
     private void updateDeliveryStatementRow() {
         deliveryStatementRow.getDeliveryStatement().getContract().setContractDate(contractDate.getValue());
         deliveryStatementRow.getDeliveryStatement().getContract().setContractNumber(contractNumber.getText());
-        deliveryStatementRow.getDeliveryStatement().getContract().setAdditionalAgreement(Integer.parseInt(agreementNumber.getText()));
+        deliveryStatementRow.getDeliveryStatement().getContract().setAdditionalAgreement(
+                agreementNumber.getText().isEmpty() ? null : Integer.parseInt(agreementNumber.getText()));
         deliveryStatementRow.getDeliveryStatement().setNumber(number.getText());
         deliveryStatementRow.setPeriod(Integer.parseInt(period.getText()));
         deliveryStatementRow.setProductName(productName.getText());

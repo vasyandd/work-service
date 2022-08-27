@@ -2,10 +2,10 @@ package ru.workservice.util;
 
 
 
-import ru.workservice.model.Contract;
-import ru.workservice.model.DeliveryStatement;
-import ru.workservice.model.DeliveryStatementRow;
-import ru.workservice.model.Notification;
+import ru.workservice.model.entity.Contract;
+import ru.workservice.model.entity.DeliveryStatement;
+import ru.workservice.model.entity.DeliveryStatementRow;
+import ru.workservice.model.entity.Notification;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.AllArgsConstructor;
@@ -20,13 +21,17 @@ import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.WorkServiceFXApplication;
+import ru.workservice.model.ExportTable;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.model.DeliveryStatement;
-import ru.workservice.model.DeliveryStatementRow;
-import ru.workservice.model.Notification;
+import ru.workservice.model.entity.DeliveryStatement;
+import ru.workservice.model.entity.DeliveryStatementRow;
+import ru.workservice.model.entity.Notification;
+import ru.workservice.service.ExportToPdfService;
+import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Month;
@@ -41,6 +46,8 @@ import static ru.workservice.view.util.Style.*;
 public class ViewAllInformationController implements Initializable {
     private final List<DeliveryStatementRow> changedRows = new ArrayList<>();
     private final DeliveryStatementService deliveryStatementService;
+
+    private final ExportToPdfService exportToPdfService;
     private final ObservableList<String> products = FXCollections.observableArrayList();
     private final ObservableList<String> contracts = FXCollections.observableArrayList();
     private final ObservableList<MainTableRow> tableRows = FXCollections.observableArrayList();
@@ -70,6 +77,12 @@ public class ViewAllInformationController implements Initializable {
     private TableView<MainTableRow> table;
     @FXML
     private Button editDeliveryStatementButton;
+    @FXML
+    private Button exportTableButton;
+    @FXML
+    private Button searchInTableButton;
+    @FXML
+    private Button cancelSearchInTableButton;
     @FXML
     private Label title;
     @FXML
@@ -109,8 +122,9 @@ public class ViewAllInformationController implements Initializable {
     @FXML
     private TableColumn<MainTableRow, String> noteCol;
 
-    public ViewAllInformationController(DeliveryStatementService deliveryStatementService, SceneSwitcher sceneSwitcher) {
+    public ViewAllInformationController(DeliveryStatementService deliveryStatementService, ExportToPdfService exportToPdfService, SceneSwitcher sceneSwitcher) {
         this.deliveryStatementService = deliveryStatementService;
+        this.exportToPdfService = exportToPdfService;
         this.sceneSwitcher = sceneSwitcher;
     }
 
@@ -145,10 +159,18 @@ public class ViewAllInformationController implements Initializable {
                         tableRows.clear();
                     }
                 }));
-        editDeliveryStatementButton.disableProperty().bind(isEmpty(table.getSelectionModel().getSelectedItems()));
+        setDisableProperties();
         addListenerForCheckBoxFields();
         setCellValueFactories();
         setRowFactories();
+    }
+
+    private void setDisableProperties() {
+        editDeliveryStatementButton.disableProperty().bind(isEmpty(table.getSelectionModel().getSelectedItems()));
+        exportTableButton.disableProperty().bind(isEmpty(table.getItems()));
+        tableSearchCriteria.disableProperty().bind(isEmpty(table.getItems()));
+        searchInTableButton.disableProperty().bind(isEmpty(table.getItems()));
+        cancelSearchInTableButton.disableProperty().bind(isEmpty(table.getItems()));
     }
 
     private void addListenerForCheckBoxFields() {
@@ -402,6 +424,16 @@ public class ViewAllInformationController implements Initializable {
         filteredContracts.setPredicate(null);
         filteredProducts.setPredicate(null);
         listViewSearchCriteria.setText("");
+    }
+
+    public void exportTable() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", ".pdf"));
+        File file = fileChooser.showSaveDialog(null);
+        ExportTable exportTable = new ExportTable();
+        exportToPdfService.saveTableToPdf(file, exportTable);
+        InformationWindow.viewSuccessSaveWindow("Таблица успешно сохранена!");
     }
 
     @AllArgsConstructor

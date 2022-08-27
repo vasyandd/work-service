@@ -1,4 +1,4 @@
-package ru.workservice.model;
+package ru.workservice.model.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
@@ -41,7 +41,7 @@ public class DeliveryStatementRow {
     private Map<Month, Integer> actualShipment = new HashMap<>();
     private Integer period;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ds_id")
     private DeliveryStatement deliveryStatement;
 

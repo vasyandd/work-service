@@ -1,6 +1,6 @@
 package ru.workservice.service;
 
-import ru.workservice.model.Notification;
+import ru.workservice.model.entity.Notification;
 
 public interface NotificationService {
 

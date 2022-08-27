@@ -1,4 +1,4 @@
-package ru.workservice.model;
+package ru.workservice.model.entity;
 
 import lombok.*;
 
@@ -23,7 +23,7 @@ public final class DeliveryStatement {
     private String number;
     private Contract contract;
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true,
-            mappedBy = "deliveryStatement", cascade = CascadeType.ALL)
+            mappedBy = "deliveryStatement", cascade = CascadeType.REMOVE)
     private List<DeliveryStatementRow> rows = new ArrayList<>();
 
     public DeliveryStatement(String number, Contract contract, List<DeliveryStatementRow> rows) {
