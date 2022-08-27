@@ -19,14 +19,14 @@
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="589.0" prefWidth="1461.0" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.workservice.view.ViewAllInformationController">
    <children>
-      <GridPane alignment="CENTER" gridLinesVisible="true" layoutX="23.0" layoutY="-3.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="572.0" prefWidth="1079.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
+      <GridPane alignment="CENTER" gridLinesVisible="true" layoutX="23.0" layoutY="-3.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="589.0" prefWidth="1457.0" AnchorPane.bottomAnchor="-2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="514.6000366210938" minWidth="10.0" prefWidth="237.6666748046875" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="1239.9999755859376" minWidth="10.0" prefWidth="1218.7333251953125" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints maxHeight="260.8000183105469" minHeight="10.0" prefHeight="140.00001220703126" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="492.79999847412114" minHeight="10.0" prefHeight="445.59998779296876" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="260.8000183105469" minHeight="10.0" prefHeight="152.00001220703126" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="517.2000061035156" minHeight="10.0" prefHeight="411.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="118.0" prefWidth="238.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
@@ -51,7 +51,7 @@
                   <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#searchListView" prefHeight="26.0" prefWidth="261.0" text="Поиск" textAlignment="CENTER" GridPane.rowIndex="2" />
                </children>
             </GridPane>
-            <ListView fx:id="listOfContractsOrProducts" prefHeight="466.0" prefWidth="389.0" GridPane.rowIndex="1" />
+            <ListView fx:id="listOfContractsOrProducts" prefHeight="356.0" prefWidth="238.0" GridPane.rowIndex="1" />
             <AnchorPane prefHeight="132.0" prefWidth="1226.0" GridPane.columnIndex="1">
                <children>
                   <Label fx:id="title" alignment="CENTER" contentDisplay="CENTER" layoutX="2.0" layoutY="56.0" prefHeight="42.0" prefWidth="999.0" text="Label" textAlignment="CENTER" textOverrun="CLIP" visible="false">

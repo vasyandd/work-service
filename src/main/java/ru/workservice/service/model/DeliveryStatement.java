@@ -139,31 +139,39 @@ public final class DeliveryStatement {
         }
 
         @Transient
-        public boolean isLastMonthNow() {
-            if (isClosed()) return false;
-            int currentMonthCode = LocalDate.now().getMonth().getValue();
+        public boolean isLastWeekBeforeExpired() {
+            if (isClosed() && isExpired()) return false;
             int currentYear = LocalDate.now().getYear();
             return period == currentYear
-                    && currentMonthCode == getLastScheduledMonthCode();
+                    && lessLastWeekBeforeExpired();
+        }
+
+        @Transient
+        private boolean lessLastWeekBeforeExpired() {
+            Month currentMonth = LocalDate.now().getMonth();
+            int currentDay = LocalDate.now().getDayOfMonth();
+            return currentDay > 23
+                    && getActualShipmentValue(currentMonth) < scheduledShipment.get(currentMonth);
         }
 
         @Transient
         public boolean isExpired() {
             if (isClosed()) return false;
-            int currentMonthCode = LocalDate.now().getMonth().getValue();
             int currentYear = LocalDate.now().getYear();
             return period <= currentYear
-                    && currentMonthCode > getLastScheduledMonthCode();
+                    && expiredMonthExistsBeforeCurrent();
         }
 
         @Transient
-        private int getLastScheduledMonthCode() {
-            return scheduledShipment.keySet().stream()
-                    .filter(m -> scheduledShipment.get(m) > 0)
-                    .map(Month::getValue)
-                    .flatMapToInt(IntStream::of)
-                    .max()
-                    .getAsInt();
+        private boolean expiredMonthExistsBeforeCurrent() {
+            int currentMonthCode = LocalDate.now().getMonth().getValue();
+            return scheduledShipment.entrySet().stream()
+                    .anyMatch(e -> e.getKey().getValue() < currentMonthCode
+                            && getActualShipmentValue(e.getKey()) < e.getValue());
+        }
+
+        private int getActualShipmentValue(Month month) {
+            return actualShipment.get(month) == null ? 0 : actualShipment.get(month);
         }
 
         @Transient

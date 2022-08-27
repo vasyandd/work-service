@@ -1,6 +1,5 @@
 package ru.workservice.view;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -20,19 +19,13 @@ import static ru.workservice.view.util.TextFieldValidator.FieldPredicate.*;
 
 @FxmlView("edit_delivery_statement.fxml")
 public class EditDeliveryStatementController {
-    private static final String ZERO = "0";
-    private SceneSwitcher sceneSwitcher;
     private DeliveryStatement.Row deliveryStatementRow;
     private Stage stage;
-    private TextFieldValidator textFieldValidator = new TextFieldValidator();
+    private final TextFieldValidator textFieldValidator = new TextFieldValidator();
     private DeliveryStatementService deliveryStatementService;
 
     public void setDeliveryStatementService(DeliveryStatementService deliveryStatementService) {
         this.deliveryStatementService = deliveryStatementService;
-    }
-
-    public void setTextFieldValidator(TextFieldValidator textFieldValidator) {
-        this.textFieldValidator = textFieldValidator;
     }
 
     @FXML
@@ -102,7 +95,7 @@ public class EditDeliveryStatementController {
     }
 
     public void initialize() {
-        textFieldValidator.addValidatorFor(TextFieldValidator.FieldPredicate.NOT_NEGATIVE_INTEGER, janAct, janExp, febAct, febExp,
+        textFieldValidator.addValidatorFor(NOT_NEGATIVE_INTEGER, janAct, janExp, febAct, febExp,
                 marAct, marExp, aprAct, aprExp, mayAct, mayExp, junAct, junExp, julAct, julExp, augAct, augExp, sepAct, sepExp,
                 octAct, octExp, novAct, novExp, decAct, decExp);
         textFieldValidator.addValidatorFor(NOT_NEGATIVE_BIG_INTEGER, productPrice);
@@ -111,9 +104,6 @@ public class EditDeliveryStatementController {
         textFieldValidator.addValidatorFor(YEAR, period);
     }
 
-    public void setSceneSwitcher(SceneSwitcher sceneSwitcher) {
-        this.sceneSwitcher = sceneSwitcher;
-    }
 
     public void setDeliveryStatementRow(DeliveryStatement.Row deliveryStatementRow) {
         this.deliveryStatementRow = deliveryStatementRow;
@@ -152,7 +142,7 @@ public class EditDeliveryStatementController {
         decAct.setText(String.valueOf(deliveryStatementRow.getActualShipment().getOrDefault(Month.DECEMBER, 0)));
     }
 
-    public void saveDeliveryStatement(ActionEvent event) {
+    public void saveDeliveryStatement() {
         if (textFieldValidator.fieldsAreValid(contractNumber, agreementNumber, number, productName, productPrice, period,
                 janAct, janExp, febAct, febExp, marAct, marExp, aprAct, aprExp, mayAct, mayExp, junAct, junExp, julAct,
                 julExp, augAct, augExp, sepAct, sepExp, octAct, octExp, novAct, novExp, decAct, decExp)) {

@@ -249,7 +249,7 @@ public class DeliveryStatementFormController implements Initializable {
                 Integer.parseInt(augQuantity.getText().trim().isEmpty() ? "0" : augQuantity.getText().trim()),
                 Integer.parseInt(sepQuantity.getText().trim().isEmpty() ? "0" : sepQuantity.getText().trim()),
                 Integer.parseInt(octQuantity.getText().trim().isEmpty() ? "0" : octQuantity.getText().trim()),
-                Integer.parseInt(novQuantity.getText().trim().isEmpty() ? "0" : janQuantity.getText().trim()),
+                Integer.parseInt(novQuantity.getText().trim().isEmpty() ? "0" : novQuantity.getText().trim()),
                 Integer.parseInt(decQuantity.getText().trim().isEmpty() ? "0" : decQuantity.getText().trim()));
     }
 

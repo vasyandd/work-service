@@ -18,7 +18,6 @@ import javafx.stage.Stage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.rgielen.fxweaver.core.FxWeaver;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.WorkServiceFXApplication;
@@ -29,12 +28,13 @@ import ru.workservice.service.model.Notification;
 import ru.workservice.view.util.SceneSwitcher;
 
 
-import javax.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Month;
 import java.util.*;
 
+import static javafx.beans.binding.Bindings.*;
+import static ru.workservice.service.DeliveryStatements.*;
 import static ru.workservice.view.util.Style.*;
 
 @Component
@@ -123,10 +123,10 @@ public class ViewAllInformationController implements Initializable {
 
     private void fetchInformationForMainTable() {
         List<DeliveryStatement> deliveryStatements = deliveryStatementService.getAllDeliveryStatementsWithNotifications();
-        deliveryStatementsByProduct = DeliveryStatements.structureByProduct(deliveryStatements);
+        deliveryStatementsByProduct = structureByProduct(deliveryStatements);
         deliveryStatements.forEach(ds ->
-                notificationsByDeliveryStatement.putAll(DeliveryStatements.structureNotificationsByDeliveryStatementRow(ds)));
-        deliveryStatementsByContract = DeliveryStatements.structureByContract(deliveryStatements);
+                notificationsByDeliveryStatement.putAll(structureNotificationsByDeliveryStatementRow(ds)));
+        deliveryStatementsByContract = structureByContract(deliveryStatements);
     }
 
     private void setTableAndFieldsOptions() {
@@ -146,7 +146,7 @@ public class ViewAllInformationController implements Initializable {
                         tableRows.clear();
                     }
                 }));
-        editDeliveryStatementButton.disableProperty().bind(Bindings.isEmpty(table.getSelectionModel().getSelectedItems()));
+        editDeliveryStatementButton.disableProperty().bind(isEmpty(table.getSelectionModel().getSelectedItems()));
         addListenerForCheckBoxFields();
         setCellValueFactories();
         setRowFactories();
@@ -313,7 +313,7 @@ public class ViewAllInformationController implements Initializable {
                 productQuantityByMonth.get(Month.OCTOBER), productQuantityByMonth.get(Month.NOVEMBER),
                 productQuantityByMonth.get(Month.DECEMBER),
                 Notification.mapListNotificationsToString(notificationsByDeliveryStatement.get(row)),
-                row.isClosed(), row.isExpired(), row.isLastMonthNow());
+                row.isClosed(), row.isExpired(), row.isLastWeekBeforeExpired());
     }
 
     private void setVisibleForFields(boolean isVisible, Control... fields) {
