@@ -127,7 +127,7 @@ public class NotificationFormController implements Initializable {
             contracts.clear();
             sceneSwitcher.switchSceneTo(MainMenuController.class, event);
         } else {
-            InformationWindow.viewInputDataNotValidWindow(BAD_MESSAGE);
+            InformationWindow.viewFailMessageWindow(BAD_MESSAGE);
         }
 
     }

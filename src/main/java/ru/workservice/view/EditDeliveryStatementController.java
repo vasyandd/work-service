@@ -156,7 +156,7 @@ public class EditDeliveryStatementController {
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
             stage.close();
         } else {
-            InformationWindow.viewInputDataNotValidWindow("Что-то все еще выделено красным");
+            InformationWindow.viewFailMessageWindow("Что-то все еще выделено красным");
         }
     }
 

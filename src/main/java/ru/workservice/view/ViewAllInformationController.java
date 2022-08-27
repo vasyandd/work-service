@@ -21,7 +21,7 @@ import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.WorkServiceFXApplication;
-import ru.workservice.model.ExportTable;
+import ru.workservice.model.ExportTableRow;
 import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static javafx.beans.binding.Bindings.*;
 import static ru.workservice.util.DeliveryStatements.*;
@@ -370,8 +371,8 @@ public class ViewAllInformationController implements Initializable {
             MainTableRow selectedRow = table.getSelectionModel().getSelectedItem();
             for (DeliveryStatementRow row : changedRows) {
                 if ((row.getProductName().equals(selectedRow.productOrContract)
-                || row.getDeliveryStatement().getContract().toString().equals(selectedRow.productOrContract))
-                && row.getPeriod().equals(selectedRow.period)) {
+                        || row.getDeliveryStatement().getContract().toString().equals(selectedRow.productOrContract))
+                        && row.getPeriod().equals(selectedRow.period)) {
                     editableRow = row;
                 }
             }
@@ -408,8 +409,7 @@ public class ViewAllInformationController implements Initializable {
         if (contractSelectedInListView) {
             filteredContracts.setPredicate(c -> c.toLowerCase()
                     .matches("(.*)" + listViewSearchCriteria.getText().toLowerCase() + "(.*)"));
-        }
-        else {
+        } else {
             filteredProducts.setPredicate(c -> c.toLowerCase()
                     .matches("(.*)" + listViewSearchCriteria.getText().toLowerCase() + "(.*)"));
         }
@@ -427,13 +427,38 @@ public class ViewAllInformationController implements Initializable {
     }
 
     public void exportTable() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", ".pdf"));
-        File file = fileChooser.showSaveDialog(null);
-        ExportTable exportTable = new ExportTable();
-        exportToPdfService.saveTableToPdf(file, exportTable);
-        InformationWindow.viewSuccessSaveWindow("Таблица успешно сохранена!");
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save");
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF", ".pdf"));
+            File file = fileChooser.showSaveDialog(null);
+            List<ExportTableRow> exportTableRows = table.getItems().stream()
+                    .map(r -> new ExportTableRow(
+                            r.productOrContract,
+                            String.valueOf(r.period),
+                            String.valueOf(r.actualProductQuantity),
+                            String.valueOf(r.scheduledProductQuantity),
+                            r.productPrice,
+                            r.janQuantity,
+                            r.febQuantity,
+                            r.marQuantity,
+                            r.aprQuantity,
+                            r.mayQuantity,
+                            r.junQuantity,
+                            r.julQuantity,
+                            r.augQuantity,
+                            r.sepQuantity,
+                            r.octQuantity,
+                            r.novQuantity,
+                            r.decQuantity,
+                            r.note
+                    ))
+                    .collect(Collectors.toList());
+            exportToPdfService.saveTableToPdf(file, exportTableRows);
+            InformationWindow.viewSuccessSaveWindow("Таблица успешно сохранена!");
+        } catch (Exception e) {
+            InformationWindow.viewFailMessageWindow("При сохранении что-то пошло не так");
+        }
     }
 
     @AllArgsConstructor

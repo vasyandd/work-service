@@ -14,7 +14,7 @@ public class InformationWindow {
         alert.showAndWait();
     }
 
-    public static void viewInputDataNotValidWindow(String message) {
+    public static void viewFailMessageWindow(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка ввода");
         alert.setResizable(true);

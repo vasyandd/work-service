@@ -191,7 +191,7 @@ public class DeliveryStatementFormController implements Initializable {
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
             sceneSwitcher.switchSceneTo(MainMenuController.class, event);
         } catch (Exception e) {
-            InformationWindow.viewInputDataNotValidWindow(e.getMessage());
+            InformationWindow.viewFailMessageWindow(e.getMessage());
         }
     }
 
@@ -239,7 +239,7 @@ public class DeliveryStatementFormController implements Initializable {
             rows.add(row);
             clearInputFields();
         } else {
-            InformationWindow.viewInputDataNotValidWindow("Что-то все еще выделено красным");
+            InformationWindow.viewFailMessageWindow("Что-то все еще выделено красным");
         }
     }
 
