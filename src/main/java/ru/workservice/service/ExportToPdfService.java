@@ -19,9 +19,11 @@ import java.util.List;
 @Service
 public class ExportToPdfService {
 
-    private final static String FONT = WorkServiceFXApplication.class.getResource("fonts/arial.ttf").toExternalForm();
+    private final static String LETTER_FONT = WorkServiceFXApplication.class.getResource("fonts/arial.ttf").toExternalForm();
+    private final static int LETTER_SIZE = 8;
+    private final static int MARGIN = 10;
 
-    private final static List<String> titles = new ArrayList<>() {{
+    private final static List<String> TITLES = new ArrayList<>() {{
         add("Контракт/Изделие");
         add("Стоимость");
         add("План (всего)");
@@ -42,33 +44,28 @@ public class ExportToPdfService {
         add("Извещения");
     }};
 
-    private final static float[] widths = new float[] {13,10,5,5,5,4,4,4,4,4,4,4,4,4,4,4,4,14};
+    private final static float[] CELL_WIDTHS = new float[] {13,10,5,5,5,4,4,4,4,4,4,4,4,4,4,4,4,14};
 
     public void saveTableToPdf(File file, List<ExportTableRow> exportTableRows) throws IOException, DocumentException {
-        Document document = new Document(PageSize.A4.rotate(), 10,10,10,10);
+        Document document = new Document(PageSize.A4.rotate(), MARGIN,MARGIN,MARGIN,MARGIN);
         PdfWriter.getInstance(document, Files.newOutputStream(file.toPath()));
 
-        BaseFont bf = BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        Font font = new Font(bf, 8);
+        BaseFont bf = BaseFont.createFont(LETTER_FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font font = new Font(bf, LETTER_SIZE);
 
         document.open();
-        PdfPTable table = new PdfPTable(widths);
+        PdfPTable table = new PdfPTable(CELL_WIDTHS);
         table.setWidthPercentage(100);
         addTableHeader(table, font);
-        for (ExportTableRow row : exportTableRows) {
-            addRowInTable(table, row, font);
-        }
 
-
-//        addRows(table);
-//        addCustomRows(table);
+        exportTableRows.forEach(row -> addRowInTable(table, row, font));
 
         document.add(table);
         document.close();
     }
 
     private void addTableHeader(PdfPTable table, Font font) {
-        titles
+        TITLES
                 .forEach(columnTitle -> {
                     PdfPCell header = new PdfPCell();
                     header.setBackgroundColor(BaseColor.LIGHT_GRAY);
