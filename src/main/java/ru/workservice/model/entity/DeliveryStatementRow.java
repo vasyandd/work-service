@@ -90,7 +90,7 @@ public class DeliveryStatementRow {
 
     @Transient
     public boolean isLastWeekBeforeExpired() {
-        if (isClosed() && isExpired()) return false;
+        if (isClosed() || isExpired()) return false;
         int currentYear = LocalDate.now().getYear();
         return period == currentYear
                 && lessLastWeekBeforeExpired();
