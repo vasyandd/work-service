@@ -249,18 +249,18 @@ public class ViewAllInformationController implements Initializable {
             public void updateItem(MainTableRow item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item == null) {
-                    getStyleClass().removeAll(EXPIRED.styleClass(), LAST_MONTH.styleClass(), COMPLETED.styleClass());
+                    getStyleClass().removeAll(EXPIRED.styleClass(), LAST_WEEK.styleClass(), COMPLETED.styleClass());
                 } else if (item.isCompleted) {
-                    getStyleClass().removeAll(EXPIRED.styleClass(), LAST_MONTH.styleClass());
+                    getStyleClass().removeAll(EXPIRED.styleClass(), LAST_WEEK.styleClass());
                     getStyleClass().add(COMPLETED.styleClass());
                 } else if (item.isExpired) {
-                    getStyleClass().removeAll(COMPLETED.styleClass(), LAST_MONTH.styleClass());
+                    getStyleClass().removeAll(COMPLETED.styleClass(), LAST_WEEK.styleClass());
                     getStyleClass().add(EXPIRED.styleClass());
                 } else if (item.isLastMonthNow) {
                     getStyleClass().removeAll(COMPLETED.styleClass(), EXPIRED.styleClass());
-                    getStyleClass().add(LAST_MONTH.styleClass());
+                    getStyleClass().add(LAST_WEEK.styleClass());
                 } else {
-                    getStyleClass().removeAll(EXPIRED.styleClass(), LAST_MONTH.styleClass(), COMPLETED.styleClass());
+                    getStyleClass().removeAll(EXPIRED.styleClass(), LAST_WEEK.styleClass(), COMPLETED.styleClass());
                 }
             }
         });
@@ -457,7 +457,7 @@ public class ViewAllInformationController implements Initializable {
             exportToPdfService.saveTableToPdf(file, exportTableRows);
             InformationWindow.viewSuccessSaveWindow("Таблица успешно сохранена!");
         } catch (Exception e) {
-            InformationWindow.viewFailMessageWindow("При сохранении что-то пошло не так");
+            InformationWindow.viewFailMessageWindow("При сохранении что-то пошло не так \n" + e.getMessage());
         }
     }
 

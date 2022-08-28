@@ -3,7 +3,7 @@ package ru.workservice.view.util;
 public enum Style {
     COMPLETED("completed"),
     EXPIRED("expired"),
-    LAST_MONTH("last_month"),
+    LAST_WEEK("last_month"),
     INVALID_DATA("invalid_data");
 
     private final String styleClass;

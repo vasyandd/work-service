@@ -13,6 +13,7 @@ import ru.workservice.view.LoginFormController;
 
 public class WorkServiceFXApplication extends Application {
     private final static String ICON = WorkServiceFXApplication.class.getResource("pepe.png").toExternalForm();
+
     private ConfigurableApplicationContext applicationContext;
 
     @Override
