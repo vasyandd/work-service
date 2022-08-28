@@ -11,8 +11,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.workservice.view.LoginFormController;
 
+import static ru.workservice.Constants.*;
+
 public class WorkServiceFXApplication extends Application {
-    private final static String ICON = WorkServiceFXApplication.class.getResource("pepe.png").toExternalForm();
 
     private ConfigurableApplicationContext applicationContext;
 

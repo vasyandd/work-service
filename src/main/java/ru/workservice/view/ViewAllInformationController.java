@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -39,6 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static javafx.beans.binding.Bindings.*;
+import static ru.workservice.Constants.ICON;
 import static ru.workservice.util.DeliveryStatements.*;
 import static ru.workservice.view.util.Style.*;
 
@@ -362,6 +364,7 @@ public class ViewAllInformationController implements Initializable {
             Stage thisStage = new Stage();
             thisStage.setTitle("Лучше не ошибайся епта");
             thisStage.initModality(Modality.WINDOW_MODAL);
+            thisStage.getIcons().add(new Image(ICON));
             thisStage.setScene(scene);
             thisStage.setResizable(false);
             thisStage.centerOnScreen();

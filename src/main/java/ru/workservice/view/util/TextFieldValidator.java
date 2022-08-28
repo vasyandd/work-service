@@ -12,6 +12,8 @@ import static ru.workservice.view.util.TextFieldValidator.FieldPredicate.*;
 @Component
 public final class TextFieldValidator {
 
+    private static final String STYLES_PATH = WorkServiceSpringBootApplication.class.getResource("styles.css").toExternalForm();
+
     public enum FieldPredicate {
         NOT_EMPTY,
         EMPTY,
@@ -64,7 +66,7 @@ public final class TextFieldValidator {
                 if (predicates.get(predicate).test(field)) {
                     field.getStyleClass().removeAll(Style.INVALID_DATA.styleClass());
                 } else {
-                    field.getStylesheets().add(WorkServiceSpringBootApplication.STYLES_PATH);
+                    field.getStylesheets().add(STYLES_PATH);
                     field.getStyleClass().add(Style.INVALID_DATA.styleClass());
                 }
             });

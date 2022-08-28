@@ -204,9 +204,14 @@ public class EditDeliveryStatementController {
     }
 
     public void deleteDeliveryStatementRow() {
-        deliveryStatementService.deleteDeliveryStatementRow(deliveryStatementRow.getId());
-        InformationWindow.viewSuccessSaveWindow("Строка ведомости поставки удалена!");
-        stage.close();
+        if (deliveryStatementRow.getDeliveryStatement().getRows().size() > 1) {
+            deliveryStatementService.deleteDeliveryStatementRow(deliveryStatementRow.getId());
+            InformationWindow.viewSuccessSaveWindow("Строка ведомости поставки удалена!");
+            stage.close();
+        }
+        else {
+            deleteDeliveryStatement();
+        }
     }
 
 }
