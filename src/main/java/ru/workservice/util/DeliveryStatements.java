@@ -21,7 +21,7 @@ public final class DeliveryStatements {
 
     public static Map<String, DeliveryStatement> structureByContract(List<DeliveryStatement> deliveryStatements) {
         return deliveryStatements.stream()
-                .collect(toMap(d -> d.getContract().toString(), Function.identity()));
+                .collect(toMap(d -> d.getContract().toString() + " (в/п " + d.getNumber() + ")", Function.identity()));
     }
 
     public static Map<String, List<DeliveryStatement>> structureByProduct(List<DeliveryStatement> deliveryStatements) {
