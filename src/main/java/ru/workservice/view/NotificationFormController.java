@@ -12,8 +12,8 @@ import javafx.scene.control.TextField;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.service.DeliveryStatementService;
-import ru.workservice.util.DeliveryStatements;
 import ru.workservice.service.NotificationService;
+import ru.workservice.util.DeliveryStatements;
 import ru.workservice.model.entity.Contract;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
@@ -22,6 +22,7 @@ import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 import ru.workservice.view.util.TextFieldValidator;
 
+import javax.persistence.EntityNotFoundException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,7 @@ import static ru.workservice.view.util.TextFieldValidator.FieldPredicate.POSITIV
 @FxmlView("notification_form.fxml")
 public class NotificationFormController implements Initializable {
     private static final String SUCCESS_MESSAGE = "Извещение сохранено!";
-    private static final String BAD_MESSAGE = "Что-то выделено красныи!";
+    private static final String BAD_MESSAGE = "Что-то выделено красным!";
     private final NotificationService notificationService;
     private final SceneSwitcher sceneSwitcher;
     private final DeliveryStatementService deliveryStatementService;
@@ -44,7 +45,7 @@ public class NotificationFormController implements Initializable {
     private final ObservableList<Contract> contracts = FXCollections.observableArrayList();
     private final ObservableList<String> products = FXCollections.observableArrayList();
     private final Map<String, Integer> productShipment = new HashMap<>();
-    private Map<Contract, Map<Integer, List<DeliveryStatementRow>>> productsByContractForPeriod;
+    private Map<Contract, List<DeliveryStatementRow>> productsByContract;
 
     @FXML
     private TextField number;
@@ -77,9 +78,11 @@ public class NotificationFormController implements Initializable {
 
     private void setFieldsOptions() {
         List<DeliveryStatement> deliveryStatements = deliveryStatementService.getOpenDeliveryStatements();
-        productsByContractForPeriod = DeliveryStatements.structureProductsByContractForPeriod(deliveryStatements);
-        contracts.addAll(deliveryStatements.stream().map(DeliveryStatement::getContract).collect(Collectors.toList()));
-        date.getEditor().textProperty().addListener(((observableValue, newValue, oldValue) -> products.clear()));
+        productsByContract = DeliveryStatements.structureProductsByContract(deliveryStatements);
+        contracts.addAll(deliveryStatements.stream()
+                .map(DeliveryStatement::getContract)
+                .distinct()
+                .collect(Collectors.toList()));
         contractBox.setItems(contracts);
         productBox.setItems(products);
         addListenerForChoiceBoxFields();
@@ -92,12 +95,13 @@ public class NotificationFormController implements Initializable {
             if (!contracts.isEmpty() && date.getValue() != null) {
                 products.clear();
                 Contract contract = observable.getValue();
-                Integer period = date.getValue().getYear();
                 productShipment.clear();
-                products.addAll(productsByContractForPeriod.get(contract).get(period).stream()
+                products.addAll(productsByContract.get(contract).stream()
+                        .filter(row -> date.getValue().getYear() == row.getPeriod())
                         .peek(row -> productShipment.put(row.getProductName(),
                                 row.getScheduledProductQuantity() - row.getActualProductQuantity()))
                         .map(DeliveryStatementRow::getProductName)
+                        .distinct()
                         .collect(Collectors.toList()));
             }
         });
@@ -117,15 +121,19 @@ public class NotificationFormController implements Initializable {
 
     public void saveNotification(ActionEvent event) {
         if (textFieldValidator.fieldsAreValid(number, date.getEditor(), productQuantity)) {
-            Contract selectedContract = contractBox.getValue();
-            Notification notification = new Notification(Integer.parseInt(number.getText()),
-                    date.getValue(), productBox.getSelectionModel().getSelectedItem(),
-                    Integer.parseInt(productQuantity.getText().trim()), productNumbers.getText().trim(),
-                    selectedContract);
-            notificationService.saveNotification(notification);
-            InformationWindow.viewSuccessSaveWindow(SUCCESS_MESSAGE);
-            contracts.clear();
-            sceneSwitcher.switchSceneTo(MainMenuController.class, event);
+            try {
+                Contract selectedContract = contractBox.getValue();
+                Notification notification = new Notification(Integer.parseInt(number.getText()),
+                        date.getValue(), productBox.getSelectionModel().getSelectedItem(),
+                        Integer.parseInt(productQuantity.getText().trim()), productNumbers.getText().trim(),
+                        selectedContract);
+                notificationService.saveNotification(notification);
+                InformationWindow.viewSuccessSaveWindow(SUCCESS_MESSAGE);
+                contracts.clear();
+                sceneSwitcher.switchSceneTo(MainMenuController.class, event);
+            } catch (EntityNotFoundException e) {
+                InformationWindow.viewFailMessageWindow("Ведомость поставки для этого изделия не забита");
+            }
         } else {
             InformationWindow.viewFailMessageWindow(BAD_MESSAGE);
         }

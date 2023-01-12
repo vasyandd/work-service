@@ -1,17 +1,14 @@
 package ru.workservice.util;
 
 
-
 import ru.workservice.model.entity.Contract;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
 import ru.workservice.model.entity.Notification;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -24,12 +21,13 @@ public final class DeliveryStatements {
                 .collect(toMap(d -> d.getContract().toString() + " (в/п " + d.getNumber() + ")", Function.identity()));
     }
 
-    public static Map<String, List<DeliveryStatement>> structureByProduct(List<DeliveryStatement> deliveryStatements) {
-        Map<String, List<DeliveryStatement>> result = new HashMap<>();
+    public static Map<String, Set<DeliveryStatement>> structureByProduct(List<DeliveryStatement> deliveryStatements) {
+        Map<String, Set<DeliveryStatement>> result = new HashMap<>();
         for (DeliveryStatement d : deliveryStatements) {
             for (DeliveryStatementRow row : d.getRows()) {
+
                 result.computeIfAbsent(row.getProductName(),
-                        (unused) -> new ArrayList<>()).add(d);
+                        (unused) -> new HashSet<>()).add(d);
             }
         }
         return result;
@@ -48,5 +46,12 @@ public final class DeliveryStatements {
         }
         return result;
     }
+
+    public static Map<Contract, List<DeliveryStatementRow>> structureProductsByContract(List<DeliveryStatement> deliveryStatements) {
+        return deliveryStatements.stream()
+                .flatMap(deliveryStatement -> deliveryStatement.getNotDeliveredProducts().stream())
+                .collect(Collectors.groupingBy(deliveryStatementRow -> deliveryStatementRow.getDeliveryStatement().getContract()));
+    }
+
 }
 

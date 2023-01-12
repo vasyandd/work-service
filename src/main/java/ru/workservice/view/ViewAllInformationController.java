@@ -23,11 +23,11 @@ import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 import ru.workservice.WorkServiceFXApplication;
 import ru.workservice.model.ExportTableRow;
-import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
 import ru.workservice.model.entity.Notification;
 import ru.workservice.service.ExportToPdfService;
+import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 
@@ -55,7 +55,7 @@ public class ViewAllInformationController implements Initializable {
     private final ObservableList<String> contracts = FXCollections.observableArrayList();
     private final ObservableList<MainTableRow> tableRows = FXCollections.observableArrayList();
     private Map<String, DeliveryStatement> deliveryStatementsByContract;
-    private Map<String, List<DeliveryStatement>> deliveryStatementsByProduct;
+    private Map<String, Set<DeliveryStatement>> deliveryStatementsByProduct;
     private final Map<DeliveryStatementRow, List<Notification>> notificationsByDeliveryStatement = new HashMap<>();
 
     private FilteredList<MainTableRow> filteredTableRows;
@@ -272,14 +272,14 @@ public class ViewAllInformationController implements Initializable {
         setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
         contractSelectedInListView = false;
         removeListViewPredicate();
-        listOfContractsOrProducts.setItems(filteredProducts);
+        listOfContractsOrProducts.setItems(filteredProducts.sorted(Comparator.naturalOrder()));
     }
 
     public void fillContractsList() {
         setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
         contractSelectedInListView = true;
         removeListViewPredicate();
-        listOfContractsOrProducts.setItems(filteredContracts);
+        listOfContractsOrProducts.setItems(filteredContracts.sorted(Comparator.naturalOrder()));
     }
 
     private void fillTable(String selectedItem) {
@@ -308,7 +308,7 @@ public class ViewAllInformationController implements Initializable {
     private void fillTableByProduct(String key) {
         tableRows.clear();
         changedRows.clear();
-        List<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
+        Set<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
         for (DeliveryStatement deliveryStatement : deliveryStatements) {
             List<MainTableRow> rowsList = new ArrayList<>();
             for (DeliveryStatementRow row : deliveryStatement.getRows()) {

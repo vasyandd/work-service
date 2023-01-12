@@ -5,9 +5,9 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
-import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
+import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.TextFieldValidator;
 

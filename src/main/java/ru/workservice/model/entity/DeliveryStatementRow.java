@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,8 @@ public class DeliveryStatementRow {
     private DeliveryStatement deliveryStatement;
 
     @NotFound(action = NotFoundAction.IGNORE)
-    @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "deliveryStatementRow", orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.LAZY,
+            mappedBy = "deliveryStatementRows", cascade = CascadeType.REMOVE)
     private List<Notification> notifications;
 
     public DeliveryStatementRow(BigInteger priceForOneProduct, String productName, Map<Month, Integer> scheduledShipment, Integer period) {
@@ -140,6 +141,16 @@ public class DeliveryStatementRow {
 
     public void addNotification(Notification notification) {
         notifications.add(notification);
+    }
+
+    public Month getFreeMonth() {
+        return scheduledShipment.entrySet().stream()
+                .sorted(Comparator.comparing(entry -> entry.getKey().getValue()))
+                .filter(entry -> entry.getValue() > 0
+                        && (actualShipment.get(entry.getKey()) == null || actualShipment.get(entry.getKey()) < entry.getValue()))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
     }
 }
 

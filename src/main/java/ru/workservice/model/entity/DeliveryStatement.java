@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -45,9 +46,15 @@ public final class DeliveryStatement {
     }
 
     public Map<Integer, List<DeliveryStatementRow>> getNotDeliveredProductsByPeriod() {
+            return rows.stream()
+                    .filter(row -> !row.isClosed())
+                    .collect(groupingBy(DeliveryStatementRow::getPeriod));
+    }
+
+    public List<DeliveryStatementRow> getNotDeliveredProducts() {
         return rows.stream()
                 .filter(row -> !row.isClosed())
-                .collect(groupingBy(DeliveryStatementRow::getPeriod));
+                .collect(Collectors.toList());
     }
 
     @Override

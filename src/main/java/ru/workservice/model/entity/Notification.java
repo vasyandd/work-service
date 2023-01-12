@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -28,9 +29,13 @@ public class Notification {
     private Integer productQuantity;
     private String productNumbers;
     private Contract contract;
-    @ManyToOne
-    @JoinColumn(name = "ds_row_id")
-    private DeliveryStatementRow deliveryStatementRow;
+
+    @ManyToMany
+    @JoinTable(
+            name = "NOTIFICATIONS_DELIVERY_STATEMENT_ROWS",
+            joinColumns = @JoinColumn(name = "notification_id"),
+            inverseJoinColumns = @JoinColumn(name = "dsr_id"))
+    private List<DeliveryStatementRow> deliveryStatementRows = new ArrayList<>();
 
 
     public Notification(Integer number, LocalDate date, String productName,
@@ -56,5 +61,9 @@ public class Notification {
                 + date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru"))
                 + ") номера " + productNumbers + (number != null ? " изв. № " + number : "")
                 + " от " + date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    }
+
+    public void addDeliveryStatementRow(DeliveryStatementRow deliveryStatementRow) {
+        deliveryStatementRows.add(deliveryStatementRow);
     }
 }
