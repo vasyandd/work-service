@@ -92,12 +92,11 @@ public class NotificationFormController implements Initializable {
 
     private void addListenerForChoiceBoxFields() {
         contractBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (!contracts.isEmpty() && date.getValue() != null) {
+            if (!contracts.isEmpty()) {
                 products.clear();
                 Contract contract = observable.getValue();
                 productShipment.clear();
                 products.addAll(productsByContract.get(contract).stream()
-                        .filter(row -> date.getValue().getYear() == row.getPeriod())
                         .peek(row -> productShipment.put(row.getProductName(),
                                 row.getScheduledProductQuantity() - row.getActualProductQuantity()))
                         .map(DeliveryStatementRow::getProductName)
