@@ -10,24 +10,30 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import ru.workservice.model.entity.Contract;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
+import ru.workservice.model.entity.ScanFile;
 import ru.workservice.service.DeliveryStatementService;
+import ru.workservice.service.ScanFileService;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 import ru.workservice.view.util.TextFieldValidator;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.workservice.view.util.TextFieldValidator.FieldPredicate.*;
 
@@ -38,6 +44,11 @@ public class DeliveryStatementFormController implements Initializable {
     private final DeliveryStatementService deliveryStatementService;
     private final SceneSwitcher sceneSwitcher;
     private final TextFieldValidator textFieldValidator;
+
+    private final ScanFileService scanFileService;
+
+    @FXML
+    private ListView<File> files;
 
     @FXML
     private Button deleteRowButton;
@@ -115,10 +126,11 @@ public class DeliveryStatementFormController implements Initializable {
     private TableColumn<TableRowInDeliveryStatementForm, Integer> decQuantityCol;
 
 
-    public DeliveryStatementFormController(DeliveryStatementService deliveryStatementService, SceneSwitcher sceneSwitcher, TextFieldValidator textFieldValidator) {
+    public DeliveryStatementFormController(ScanFileService scanFileService,DeliveryStatementService deliveryStatementService, SceneSwitcher sceneSwitcher, TextFieldValidator textFieldValidator) {
         this.deliveryStatementService = deliveryStatementService;
         this.sceneSwitcher = sceneSwitcher;
         this.textFieldValidator = textFieldValidator;
+        this.scanFileService = scanFileService;
     }
 
     @Override
@@ -136,6 +148,7 @@ public class DeliveryStatementFormController implements Initializable {
         textFieldValidator.addValidatorFor(NOT_EMPTY, number, productName, contractNumber);
         textFieldValidator.addValidatorFor(POSITIVE_INTEGER_OR_EMPTY, agreementNumber);
         textFieldValidator.addValidatorFor(YEAR, period);
+        files.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         deleteRowButton.disableProperty().bind(Bindings.isEmpty(table.getSelectionModel().getSelectedItems()));
     }
 
@@ -186,6 +199,7 @@ public class DeliveryStatementFormController implements Initializable {
     public void saveDeliveryStatement(ActionEvent event) {
         try {
             DeliveryStatement deliveryStatement = getDeliveryStatementFromTableView();
+            scanFileService.createScanFiles(files.getItems()).forEach(deliveryStatement::addFile);
             deliveryStatementService.saveDeliveryStatement(deliveryStatement);
             table.getItems().clear();
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
@@ -278,6 +292,25 @@ public class DeliveryStatementFormController implements Initializable {
 
     public void viewMainMenu(ActionEvent event) {
         sceneSwitcher.switchSceneTo(MainMenuController.class, event);
+    }
+
+
+    public void loadFiles() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save");
+            List<File> chosenFiles = fileChooser.showOpenMultipleDialog(null);
+            if (!CollectionUtils.isEmpty(chosenFiles)) {
+                this.files.getItems().addAll(chosenFiles);
+            }
+        } catch (Exception e) {
+            InformationWindow.viewFailMessageWindow("При добавлении файлов что-то пошло не так \n" + e.getMessage());
+        }
+    }
+
+    public void clearSelectedFiles() {
+        List<File> selectedFiles = files.getSelectionModel().getSelectedItems();
+        files.getItems().removeAll(selectedFiles);
     }
 
     @Getter
