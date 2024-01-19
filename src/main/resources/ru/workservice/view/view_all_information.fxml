@@ -74,7 +74,8 @@
                   <Button fx:id="searchInTableButton" layoutX="451.0" layoutY="14.0" mnemonicParsing="false" onAction="#searchTableRows" text="Поиск" />
                   <Button fx:id="cancelSearchInTableButton" layoutX="527.0" layoutY="14.0" mnemonicParsing="false" onAction="#removeTablePredicate" text="Очистить поиск" />
                   <TextField fx:id="tableSearchCriteria" layoutX="286.0" layoutY="14.0" />
-                  <Button fx:id="exportTableButton" layoutX="769.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportTable" text="Экспортировать в pdf" textFill="#4504ea" />
+                  <Button fx:id="exportTableButton" layoutX="731.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportTable" text="Экспортировать в pdf" textFill="#4504ea" />
+                  <Button fx:id="downloadFilesButton" layoutX="882.0" layoutY="14.0" mnemonicParsing="false" onAction="#downloadFiles" prefHeight="26.0" prefWidth="118.0" text="Загрузить сканы" />
                </children>
             </AnchorPane>
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="465.0" prefWidth="117.0" GridPane.columnIndex="1" GridPane.rowIndex="1">

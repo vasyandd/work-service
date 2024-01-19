@@ -8,6 +8,7 @@ import ru.workservice.model.entity.ScanFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,5 +30,16 @@ public class ScanFileService {
                     return scanFile;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void downloadFiles(File file, List<ScanFile> scanFiles) {
+        for (ScanFile scanFile : scanFiles) {
+            try {
+                String path = file.getAbsolutePath() + "\\" + scanFile.getName();
+                Files.write(Path.of(path), scanFile.getContent());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -1,6 +1,8 @@
 package ru.workservice.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -28,8 +30,9 @@ public final class DeliveryStatement {
             mappedBy = "deliveryStatement", cascade = CascadeType.REMOVE)
     private List<DeliveryStatementRow> rows = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true,
+    @OneToMany(orphanRemoval = true,
             mappedBy = "deliveryStatement", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<ScanFile> files = new ArrayList<>();
 
     public DeliveryStatement(String number, Contract contract, List<DeliveryStatementRow> rows) {

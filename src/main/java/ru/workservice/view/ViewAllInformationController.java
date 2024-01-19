@@ -1,5 +1,7 @@
 package ru.workservice.view;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,6 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -21,16 +24,18 @@ import lombok.Getter;
 import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import ru.workservice.WorkServiceFXApplication;
 import ru.workservice.model.ExportTableRow;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
 import ru.workservice.model.entity.Notification;
-import ru.workservice.service.ExportToPdfService;
+import ru.workservice.model.entity.ScanFile;
 import ru.workservice.service.DeliveryStatementService;
+import ru.workservice.service.ExportToPdfService;
+import ru.workservice.service.ScanFileService;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +44,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static javafx.beans.binding.Bindings.*;
+import static javafx.beans.binding.Bindings.isEmpty;
 import static ru.workservice.Constants.ICON;
 import static ru.workservice.util.DeliveryStatements.*;
 import static ru.workservice.view.util.Style.*;
@@ -57,12 +62,14 @@ public class ViewAllInformationController implements Initializable {
     private Map<String, DeliveryStatement> deliveryStatementsByContract;
     private Map<String, Set<DeliveryStatement>> deliveryStatementsByProduct;
     private final Map<DeliveryStatementRow, List<Notification>> notificationsByDeliveryStatement = new HashMap<>();
+    private final List<ScanFile> selectedFiles = new ArrayList<>();
 
     private FilteredList<MainTableRow> filteredTableRows;
     private FilteredList<String> filteredContracts;
     private FilteredList<String> filteredProducts;
     private boolean contractSelectedInListView;
     private final SceneSwitcher sceneSwitcher;
+    private final ScanFileService scanFileService;
 
     @FXML
     private CheckBox viewCompletedRows;
@@ -86,6 +93,8 @@ public class ViewAllInformationController implements Initializable {
     private Button searchInTableButton;
     @FXML
     private Button cancelSearchInTableButton;
+    @FXML
+    private Button downloadFilesButton;
     @FXML
     private Label title;
     @FXML
@@ -125,10 +134,11 @@ public class ViewAllInformationController implements Initializable {
     @FXML
     private TableColumn<MainTableRow, String> noteCol;
 
-    public ViewAllInformationController(DeliveryStatementService deliveryStatementService, ExportToPdfService exportToPdfService, SceneSwitcher sceneSwitcher) {
+    public ViewAllInformationController(DeliveryStatementService deliveryStatementService, ExportToPdfService exportToPdfService, SceneSwitcher sceneSwitcher, ScanFileService scanFileService) {
         this.deliveryStatementService = deliveryStatementService;
         this.exportToPdfService = exportToPdfService;
         this.sceneSwitcher = sceneSwitcher;
+        this.scanFileService = scanFileService;
     }
 
     @Override
@@ -161,6 +171,7 @@ public class ViewAllInformationController implements Initializable {
                         setVisibleForFields(false, title);
                         tableRows.clear();
                     }
+                    downloadFilesButton.disableProperty().set(selectedFiles.isEmpty());
                 }));
         setDisableProperties();
         addListenerForCheckBoxFields();
@@ -294,7 +305,11 @@ public class ViewAllInformationController implements Initializable {
     private void fillTableByContract(String key) {
         tableRows.clear();
         changedRows.clear();
+        selectedFiles.clear();
         DeliveryStatement deliveryStatement = deliveryStatementsByContract.get(key);
+        if (!CollectionUtils.isEmpty(deliveryStatement.getFiles())) {
+            selectedFiles.addAll(deliveryStatement.getFiles());
+        }
         List<MainTableRow> rowsList = new ArrayList<>();
         for (DeliveryStatementRow row : deliveryStatement.getRows()) {
             rowsList.add(mapDeliveryStatementRowToMainTableRow(row, null));
@@ -308,7 +323,12 @@ public class ViewAllInformationController implements Initializable {
     private void fillTableByProduct(String key) {
         tableRows.clear();
         changedRows.clear();
+        selectedFiles.clear();
         Set<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
+        selectedFiles.addAll(deliveryStatements.stream()
+                .filter(d -> !CollectionUtils.isEmpty(d.getFiles()))
+                .flatMap(d -> d.getFiles().stream())
+                .collect(Collectors.toList()));
         for (DeliveryStatement deliveryStatement : deliveryStatements) {
             List<MainTableRow> rowsList = new ArrayList<>();
             for (DeliveryStatementRow row : deliveryStatement.getRows()) {
@@ -459,6 +479,18 @@ public class ViewAllInformationController implements Initializable {
                     .collect(Collectors.toList());
             exportToPdfService.saveTableToPdf(file, exportTableRows);
             InformationWindow.viewSuccessSaveWindow("Таблица успешно сохранена!");
+        } catch (Exception e) {
+            InformationWindow.viewFailMessageWindow("При сохранении что-то пошло не так \n" + e.getMessage());
+        }
+    }
+
+    public void downloadFiles() {
+        try {
+            DirectoryChooser fileChooser = new DirectoryChooser();
+            fileChooser.setTitle("Save");
+            File file = fileChooser.showDialog(null);
+            scanFileService.downloadFiles(file, selectedFiles);
+            InformationWindow.viewSuccessSaveWindow("Файлы успешно сохранены!");
         } catch (Exception e) {
             InformationWindow.viewFailMessageWindow("При сохранении что-то пошло не так \n" + e.getMessage());
         }
