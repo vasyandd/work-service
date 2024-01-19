@@ -2,32 +2,41 @@ package ru.workservice.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import lombok.Setter;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.springframework.util.CollectionUtils;
 import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.DeliveryStatementRow;
+import ru.workservice.model.entity.ScanFile;
 import ru.workservice.service.DeliveryStatementService;
+import ru.workservice.service.ScanFileService;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.TextFieldValidator;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.workservice.view.util.TextFieldValidator.FieldPredicate.*;
 
 
 @FxmlView("edit_delivery_statement.fxml")
+@Setter
 public class EditDeliveryStatementController {
     private DeliveryStatementRow deliveryStatementRow;
     private Stage stage;
     private final TextFieldValidator textFieldValidator = new TextFieldValidator();
     private DeliveryStatementService deliveryStatementService;
+    private ScanFileService scanFileService;
 
-    public void setDeliveryStatementService(DeliveryStatementService deliveryStatementService) {
-        this.deliveryStatementService = deliveryStatementService;
-    }
-
+    @FXML
+    private ListView<ScanFile> fileListView;
     @FXML
     private TextField number;
     @FXML
@@ -94,6 +103,10 @@ public class EditDeliveryStatementController {
     public EditDeliveryStatementController() {
     }
 
+    public void setSelectedFiles(List<ScanFile> files) {
+        fileListView.getItems().addAll(new ArrayList<>(files));
+    }
+
     public void initialize() {
         textFieldValidator.addValidatorFor(NOT_NEGATIVE_INTEGER, janAct, janExp, febAct, febExp,
                 marAct, marExp, aprAct, aprExp, mayAct, mayExp, junAct, junExp, julAct, julExp, augAct, augExp, sepAct, sepExp,
@@ -104,13 +117,8 @@ public class EditDeliveryStatementController {
         textFieldValidator.addValidatorFor(YEAR, period);
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
     public void setDeliveryStatementRow(DeliveryStatementRow deliveryStatementRow) {
         this.deliveryStatementRow = deliveryStatementRow;
-
         number.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getNumber()));
         agreementNumber.setText(String.valueOf(deliveryStatementRow.getDeliveryStatement().getContract().getAdditionalAgreement() == null
         ? "" : deliveryStatementRow.getDeliveryStatement().getContract().getAdditionalAgreement()));
@@ -152,6 +160,8 @@ public class EditDeliveryStatementController {
                 julExp, augAct, augExp, sepAct, sepExp, octAct, octExp, novAct, novExp, decAct, decExp)) {
             updateDeliveryStatementRow();
             DeliveryStatement deliveryStatement = deliveryStatementRow.getDeliveryStatement();
+            List<ScanFile> scanFiles = fileListView.getItems();
+            scanFileService.saveAllByDeliveryStatement(scanFiles, deliveryStatement);
             deliveryStatementService.saveDeliveryStatement(deliveryStatement);
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
             stage.close();
@@ -212,6 +222,24 @@ public class EditDeliveryStatementController {
         else {
             deleteDeliveryStatement();
         }
+    }
+
+    public void loadFiles() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save");
+            List<File> chosenFiles = fileChooser.showOpenMultipleDialog(null);
+            if (!CollectionUtils.isEmpty(chosenFiles)) {
+                this.fileListView.getItems().addAll(scanFileService.createScanFiles(chosenFiles));
+            }
+        } catch (Exception e) {
+            InformationWindow.viewFailMessageWindow("При добавлении файлов что-то пошло не так \n" + e.getMessage());
+        }
+    }
+
+    public void clearSelectedFiles() {
+        List<ScanFile> selectedFiles = fileListView.getSelectionModel().getSelectedItems();
+        fileListView.getItems().removeAll(selectedFiles);
     }
 
 }

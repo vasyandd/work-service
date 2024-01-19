@@ -48,7 +48,7 @@ public class DeliveryStatementFormController implements Initializable {
     private final ScanFileService scanFileService;
 
     @FXML
-    private ListView<File> files;
+    private ListView<ScanFile> files;
 
     @FXML
     private Button deleteRowButton;
@@ -199,7 +199,8 @@ public class DeliveryStatementFormController implements Initializable {
     public void saveDeliveryStatement(ActionEvent event) {
         try {
             DeliveryStatement deliveryStatement = getDeliveryStatementFromTableView();
-            scanFileService.createScanFiles(files.getItems()).forEach(deliveryStatement::addFile);
+            List<ScanFile> scanFiles = files.getItems();
+            scanFileService.saveAllByDeliveryStatement(scanFiles, deliveryStatement);
             deliveryStatementService.saveDeliveryStatement(deliveryStatement);
             table.getItems().clear();
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
@@ -301,7 +302,7 @@ public class DeliveryStatementFormController implements Initializable {
             fileChooser.setTitle("Save");
             List<File> chosenFiles = fileChooser.showOpenMultipleDialog(null);
             if (!CollectionUtils.isEmpty(chosenFiles)) {
-                this.files.getItems().addAll(chosenFiles);
+                this.files.getItems().addAll(scanFileService.createScanFiles(chosenFiles));
             }
         } catch (Exception e) {
             InformationWindow.viewFailMessageWindow("При добавлении файлов что-то пошло не так \n" + e.getMessage());
@@ -309,7 +310,7 @@ public class DeliveryStatementFormController implements Initializable {
     }
 
     public void clearSelectedFiles() {
-        List<File> selectedFiles = files.getSelectionModel().getSelectedItems();
+        List<ScanFile> selectedFiles = files.getSelectionModel().getSelectedItems();
         files.getItems().removeAll(selectedFiles);
     }
 

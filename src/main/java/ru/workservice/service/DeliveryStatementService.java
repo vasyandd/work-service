@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class DeliveryStatementService {
     private final DeliveryStatementRepository deliveryStatementRepository;
     private final DeliveryStatementRowRepository deliveryStatementRowRepository;
+    private final ScanFileService scanFileService;
 
     @Transactional
     public void saveDeliveryStatement(DeliveryStatement deliveryStatement) {
@@ -131,7 +132,9 @@ public class DeliveryStatementService {
 //        return result;
     }
 
+    @Transactional
     public void delete(Long id) {
+        scanFileService.deleteByDeliverStatementId(id);
         deliveryStatementRepository.deleteById(id);
     }
 

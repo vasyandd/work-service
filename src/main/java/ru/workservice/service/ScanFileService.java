@@ -1,19 +1,26 @@
 package ru.workservice.service;
 
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.workservice.model.entity.DeliveryStatement;
 import ru.workservice.model.entity.ScanFile;
+import ru.workservice.repository.ScanFileRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ScanFileService {
+    private final ScanFileRepository repository;
 
     public List<ScanFile> createScanFiles(List<File> files) {
         return files.stream()
@@ -41,5 +48,20 @@ public class ScanFileService {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<ScanFile> findAllByDeliveryStatementId(Set<Long> ids) {
+        return repository.findAllByDeliveryStatementIdIn(ids);
+    }
+
+    @Transactional
+    public List<ScanFile> saveAllByDeliveryStatement(List<ScanFile> scanFiles, DeliveryStatement deliveryStatement) {
+        repository.deleteAllByDeliveryStatementId(deliveryStatement.getId());
+        scanFiles.forEach(f -> f.setDeliveryStatement(deliveryStatement));
+        return repository.saveAll(scanFiles);
+    }
+
+    public void deleteByDeliverStatementId(Long id) {
+        repository.deleteAllByDeliveryStatementId(id);
     }
 }

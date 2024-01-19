@@ -1,7 +1,5 @@
 package ru.workservice.view;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -307,8 +305,9 @@ public class ViewAllInformationController implements Initializable {
         changedRows.clear();
         selectedFiles.clear();
         DeliveryStatement deliveryStatement = deliveryStatementsByContract.get(key);
-        if (!CollectionUtils.isEmpty(deliveryStatement.getFiles())) {
-            selectedFiles.addAll(deliveryStatement.getFiles());
+        List<ScanFile> scanFiles = scanFileService.findAllByDeliveryStatementId(Set.of(deliveryStatement.getId()));
+        if (!scanFiles.isEmpty()) {
+            selectedFiles.addAll(scanFiles);
         }
         List<MainTableRow> rowsList = new ArrayList<>();
         for (DeliveryStatementRow row : deliveryStatement.getRows()) {
@@ -325,10 +324,12 @@ public class ViewAllInformationController implements Initializable {
         changedRows.clear();
         selectedFiles.clear();
         Set<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
-        selectedFiles.addAll(deliveryStatements.stream()
-                .filter(d -> !CollectionUtils.isEmpty(d.getFiles()))
-                .flatMap(d -> d.getFiles().stream())
-                .collect(Collectors.toList()));
+        List<ScanFile> scanFiles = scanFileService.findAllByDeliveryStatementId(deliveryStatements.stream()
+                .map(DeliveryStatement::getId)
+                .collect(Collectors.toSet()));
+        if (!scanFiles.isEmpty()) {
+            selectedFiles.addAll(scanFiles);
+        }
         for (DeliveryStatement deliveryStatement : deliveryStatements) {
             List<MainTableRow> rowsList = new ArrayList<>();
             for (DeliveryStatementRow row : deliveryStatement.getRows()) {
@@ -403,6 +404,8 @@ public class ViewAllInformationController implements Initializable {
             editController.setDeliveryStatementRow(editableRow);
             editController.setStage(thisStage);
             editController.setDeliveryStatementService(deliveryStatementService);
+            editController.setScanFileService(scanFileService);
+            editController.setSelectedFiles(selectedFiles);
             thisStage.showAndWait();
             clearMainList();
             sceneSwitcher.switchSceneTo(ViewAllInformationController.class, event);

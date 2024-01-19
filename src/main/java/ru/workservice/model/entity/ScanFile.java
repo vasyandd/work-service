@@ -23,4 +23,9 @@ public class ScanFile {
     @ManyToOne
     @JoinColumn(name = "ds_id")
     private DeliveryStatement deliveryStatement;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

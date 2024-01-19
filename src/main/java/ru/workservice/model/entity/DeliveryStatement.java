@@ -30,22 +30,11 @@ public final class DeliveryStatement {
             mappedBy = "deliveryStatement", cascade = CascadeType.REMOVE)
     private List<DeliveryStatementRow> rows = new ArrayList<>();
 
-    @OneToMany(orphanRemoval = true,
-            mappedBy = "deliveryStatement", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<ScanFile> files = new ArrayList<>();
-
     public DeliveryStatement(String number, Contract contract, List<DeliveryStatementRow> rows) {
         this.number = number;
         this.contract = contract;
         this.rows = rows;
     }
-
-    public void addFile(ScanFile file) {
-        file.setDeliveryStatement(this);
-        files.add(file);
-    }
-
 
     public DeliveryStatementRow getRowByProductAndPeriod(String productName, int year) {
         return rows.stream()
