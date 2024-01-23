@@ -73,6 +73,8 @@ public class NotificationBindController implements Initializable {
         notificationListView.disableProperty().set(true);
         contractBox.setItems(contracts);
         productBox.setItems(products);
+        bindButton.disableProperty().bind(Bindings.isEmpty(notificationListView.getSelectionModel().getSelectedItems()));
+        deleteButton.disableProperty().bind(Bindings.isEmpty(notificationListView.getSelectionModel().getSelectedItems()));
     }
 
     private void updateNotifications(){
@@ -93,13 +95,11 @@ public class NotificationBindController implements Initializable {
         });
         productBox.getSelectionModel().selectedItemProperty().addListener(((observableValue, newValue, oldValue) -> {
             String selectedProduct = observableValue.getValue();
-            notificationListView.disableProperty().set(selectedProduct == null);
-        }));
-        notificationListView.getSelectionModel().selectedItemProperty().addListener(((observableValue, newValue, oldValue) -> {
-            Notification selectedNotification = observableValue.getValue();
-            if (selectedNotification != null) {
-                bindButton.disableProperty().set(false);
-                deleteButton.disableProperty().set(false);
+            if (selectedProduct == null) {
+                notificationListView.disableProperty().set(true);
+                notificationListView.getSelectionModel().clearSelection();
+            } else {
+                notificationListView.disableProperty().set(false);
             }
         }));
     }
@@ -110,7 +110,7 @@ public class NotificationBindController implements Initializable {
             notification.setStub(false);
             notification.setContract(contractBox.getSelectionModel().getSelectedItem());
             notification.setProductName(productBox.getSelectionModel().getSelectedItem());
-            notificationService.saveNotification(notification);
+            notificationService.updateNotification(notification);
             InformationWindow.viewSuccessSaveWindow("Извещение вбито!");
             contracts.clear();
             updateNotifications();
