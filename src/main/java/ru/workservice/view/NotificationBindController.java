@@ -115,7 +115,7 @@ public class NotificationBindController implements Initializable {
             contracts.clear();
             updateNotifications();
         } catch (Exception e) {
-            InformationWindow.viewFailMessageWindow("Не получилось вбить извещение");
+            InformationWindow.viewFailMessageWindow("Не получилось вбить извещение. Ошибка: " + e.getMessage());
         }
     }
 
@@ -127,7 +127,7 @@ public class NotificationBindController implements Initializable {
             updateNotifications();
             InformationWindow.viewSuccessSaveWindow("Сообщение удалено!");
         } catch (Exception e) {
-            InformationWindow.viewFailMessageWindow("Не получилось удалить извещение");
+            InformationWindow.viewFailMessageWindow("Не получилось удалить извещение. Ошибка: " + e.getMessage());
         }
     }
 

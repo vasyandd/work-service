@@ -324,7 +324,6 @@ public class ViewAllInformationController implements Initializable {
     private void fillTableByProduct(String key) {
         tableRows.clear();
         changedRows.clear();
-        selectedFiles.clear();
         Set<DeliveryStatement> deliveryStatements = deliveryStatementsByProduct.get(key);
         List<ScanFile> scanFiles = scanFileService.findAllByDeliveryStatementId(deliveryStatements.stream()
                 .map(DeliveryStatement::getId)
@@ -405,6 +404,7 @@ public class ViewAllInformationController implements Initializable {
             thisStage.showAndWait();
             clearMainList();
             sceneSwitcher.switchSceneTo(ViewAllInformationController.class, event);
+            downloadFilesButton.disableProperty().set(true);
         } catch (IOException e) {
             e.printStackTrace();
         }

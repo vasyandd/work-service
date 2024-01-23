@@ -200,12 +200,13 @@ public class DeliveryStatementFormController implements Initializable {
         try {
             DeliveryStatement deliveryStatement = getDeliveryStatementFromTableView();
             List<ScanFile> scanFiles = files.getItems();
-            scanFileService.saveAllByDeliveryStatement(scanFiles, deliveryStatement);
             deliveryStatementService.saveDeliveryStatement(deliveryStatement);
+            scanFileService.saveAllByDeliveryStatement(scanFiles, deliveryStatement);
             table.getItems().clear();
             InformationWindow.viewSuccessSaveWindow("Ведомость поставки сохранена!");
             sceneSwitcher.switchSceneTo(MainMenuController.class, event);
         } catch (Exception e) {
+            e.printStackTrace();
             InformationWindow.viewFailMessageWindow(e.getMessage());
         }
     }

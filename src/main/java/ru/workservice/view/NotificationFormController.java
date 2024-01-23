@@ -131,7 +131,7 @@ public class NotificationFormController implements Initializable {
                 contracts.clear();
                 sceneSwitcher.switchSceneTo(MainMenuController.class, event);
             } catch (EntityNotFoundException e) {
-                InformationWindow.viewFailMessageWindow("Ведомость поставки для этого изделия не забита");
+                InformationWindow.viewFailMessageWindow("Ведомость поставки для этого изделия не забита Ошибка: " + e.getMessage());
             }
         } else {
             InformationWindow.viewFailMessageWindow(BAD_MESSAGE);

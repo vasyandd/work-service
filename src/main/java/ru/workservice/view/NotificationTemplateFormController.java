@@ -63,7 +63,7 @@ public class NotificationTemplateFormController {
                 InformationWindow.viewSuccessSaveWindow(SUCCESS_MESSAGE);
                 sceneSwitcher.switchSceneTo(MainMenuController.class, event);
             } catch (Exception e) {
-                InformationWindow.viewFailMessageWindow("Ошибка при сохранении");
+                InformationWindow.viewFailMessageWindow("Ошибка при сохранении. Ошибка: " + e.getMessage());
             }
         } else {
             InformationWindow.viewFailMessageWindow(BAD_MESSAGE);
