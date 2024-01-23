@@ -29,6 +29,7 @@ public class Notification {
     private Integer productQuantity;
     private String productNumbers;
     private Contract contract;
+    private Boolean stub = false;
 
     @ManyToMany
     @JoinTable(
@@ -49,14 +50,7 @@ public class Notification {
     }
 
 
-    public static String mapListNotificationsToString(List<Notification> notifications) {
-        return notifications.stream()
-                .map(Notification::toString)
-                .collect(Collectors.joining(", "));
-    }
-
-    @Override
-    public String toString() {
+    public String getViewInformation() {
         return productQuantity + " шт. ("
                 + date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru"))
                 + ") номера " + productNumbers + (number != null ? " изв. № " + number : "")
@@ -65,5 +59,12 @@ public class Notification {
 
     public void addDeliveryStatementRow(DeliveryStatementRow deliveryStatementRow) {
         deliveryStatementRows.add(deliveryStatementRow);
+    }
+
+    @Override
+    public String toString() {
+        return "№ " + number + " от " + date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+                + " к контракту " + contract.getContractNumber()
+                + " на изделие " + productName + " (" + productNumbers + "шт.)";
     }
 }

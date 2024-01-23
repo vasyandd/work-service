@@ -32,6 +32,8 @@ import ru.workservice.model.entity.ScanFile;
 import ru.workservice.service.DeliveryStatementService;
 import ru.workservice.service.ExportToPdfService;
 import ru.workservice.service.ScanFileService;
+import ru.workservice.util.Notifications;
+import ru.workservice.view.util.Controls;
 import ru.workservice.view.util.InformationWindow;
 import ru.workservice.view.util.SceneSwitcher;
 
@@ -166,7 +168,7 @@ public class ViewAllInformationController implements Initializable {
                         unselectCheckBoxFieldsExceptFor(null);
                         fillTable(observableValue.getValue());
                     } else {
-                        setVisibleForFields(false, title);
+                        Controls.setVisibleForFields(false, title);
                         tableRows.clear();
                     }
                     downloadFilesButton.disableProperty().set(selectedFiles.isEmpty());
@@ -278,14 +280,14 @@ public class ViewAllInformationController implements Initializable {
     }
 
     public void fillProductsList() {
-        setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
+        Controls.setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
         contractSelectedInListView = false;
         removeListViewPredicate();
         listOfContractsOrProducts.setItems(filteredProducts.sorted(Comparator.naturalOrder()));
     }
 
     public void fillContractsList() {
-        setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
+        Controls.setVisibleForFields(false, viewExpiredRows, viewLastMonthRows, viewCompletedRows);
         contractSelectedInListView = true;
         removeListViewPredicate();
         listOfContractsOrProducts.setItems(filteredContracts.sorted(Comparator.naturalOrder()));
@@ -316,7 +318,7 @@ public class ViewAllInformationController implements Initializable {
         }
         tableRows.addAll(rowsList);
         title.setText(deliveryStatement.toString());
-        setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
+        Controls.setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
     }
 
     private void fillTableByProduct(String key) {
@@ -342,7 +344,7 @@ public class ViewAllInformationController implements Initializable {
             tableRows.addAll(rowsList);
         }
         title.setText("Все ведомости поставки по изделию " + key);
-        setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
+        Controls.setVisibleForFields(true, title, viewCompletedRows, viewLastMonthRows, viewExpiredRows);
     }
 
     private MainTableRow mapDeliveryStatementRowToMainTableRow(DeliveryStatementRow row, String contract) {
@@ -357,14 +359,8 @@ public class ViewAllInformationController implements Initializable {
                 productQuantityByMonth.get(Month.AUGUST), productQuantityByMonth.get(Month.SEPTEMBER),
                 productQuantityByMonth.get(Month.OCTOBER), productQuantityByMonth.get(Month.NOVEMBER),
                 productQuantityByMonth.get(Month.DECEMBER),
-                Notification.mapListNotificationsToString(notificationsByDeliveryStatement.get(row)),
+                Notifications.mapListNotificationsToString(notificationsByDeliveryStatement.get(row)),
                 row.isClosed(), row.isExpired(), row.isLastWeekBeforeExpired());
-    }
-
-    private void setVisibleForFields(boolean isVisible, Control... fields) {
-        for (Control f : fields) {
-            f.setVisible(isVisible);
-        }
     }
 
     private void unselectCheckBoxFieldsExceptFor(CheckBox checkBox) {

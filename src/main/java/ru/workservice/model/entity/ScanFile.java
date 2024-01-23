@@ -16,6 +16,7 @@ public class ScanFile {
     @GeneratedValue
     private Long id;
 
+    @Column(columnDefinition = "VARBINARY(10000000)")
     private byte[] content;
     private String name;
     private String extension;

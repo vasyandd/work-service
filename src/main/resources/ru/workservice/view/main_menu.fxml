@@ -13,23 +13,34 @@
          <font>
             <Font size="36.0" />
          </font></Button>
-      <GridPane layoutX="-1.0" layoutY="2.0" prefHeight="274.0" prefWidth="507.0">
+      <GridPane layoutX="-1.0" layoutY="2.0" prefHeight="278.0" prefWidth="507.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" onAction="#switchSceneToNotificationForm" prefHeight="291.0" prefWidth="358.0" text="Ввести извещение" textAlignment="CENTER" wrapText="true">
+            <Button mnemonicParsing="false" onAction="#switchSceneToNotificationForm" prefHeight="158.0" prefWidth="254.0" text="Вбить извещение" textAlignment="CENTER" wrapText="true">
                <font>
-                  <Font size="36.0" />
+                  <Font size="27.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" onAction="#switchSceneToDeliveryStatementForm" prefHeight="299.0" prefWidth="295.0" text="Ввести ведомость поставки" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1">
+            <Button mnemonicParsing="false" onAction="#switchSceneToDeliveryStatementForm" prefHeight="299.0" prefWidth="295.0" text="Вбить ведомость поставки" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1">
                <font>
-                  <Font size="36.0" />
+                  <Font size="27.0" />
+               </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#switchSceneToNotificationTemplateForm" prefHeight="152.0" prefWidth="254.0" text="Вбить извещение в отстойник" textAlignment="CENTER" wrapText="true" GridPane.rowIndex="1">
+               <font>
+                  <Font size="27.0" />
+               </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#switchSceneToNotificationBind" prefHeight="152.0" prefWidth="254.0" text="Связать ведомость с извещением" textAlignment="CENTER" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font size="27.0" />
                </font>
             </Button>
          </children>

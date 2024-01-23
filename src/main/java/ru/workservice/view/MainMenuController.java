@@ -29,5 +29,13 @@ public class MainMenuController {
         switcher.switchSceneTo(ViewAllInformationController.class, event);
     }
 
+    public void switchSceneToNotificationTemplateForm(ActionEvent event) {
+        switcher.switchSceneTo(NotificationTemplateFormController.class, event);
+    }
+
+    public void switchSceneToNotificationBind(ActionEvent event) {
+        switcher.switchSceneTo(NotificationBindController.class, event);
+    }
+
 
 }
