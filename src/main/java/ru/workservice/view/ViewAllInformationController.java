@@ -378,7 +378,7 @@ public class ViewAllInformationController implements Initializable {
             AnchorPane root = loader.load();
             Scene scene = new Scene(root);
             Stage thisStage = new Stage();
-            thisStage.setTitle("Лучше не ошибайся епта");
+            thisStage.setTitle("Изменить ведомость поставки");
             thisStage.initModality(Modality.WINDOW_MODAL);
             thisStage.getIcons().add(new Image(ICON));
             thisStage.setScene(scene);
